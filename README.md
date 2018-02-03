@@ -1,10 +1,10 @@
 # Hardening Kubernetes from Scratch
 
-## Purpose
-
 The community continues to benefit from  ```kubernetes-the-hard-way``` by Kelsey Hightower in understanding how each of the components work together and are configured in a secure manner, step-by-step.  In a similar manner but using a slightly different approach, this guide seeks to demonstrate how the security-related settings inside ```kubernetes``` and ```etcd``` actually work from the ground up, one change at a time, validated by real attacks.
 
 By following this guide, you will configure one of the least secure clusters possible at the start. Each step will attempt to follow the pattern of a) educate, b) attack, c) harden, and d) verify in order of security importance and maturity.  Upon completion of the guide, you will have successfully hacked your cluster several times over and now fully understand all the necessary configuration changes to prevent each one from ever happening again.
+
+> The cluster built in this tutorial is not production ready--especially at the beginning--but the concepts learned are definitely applicable to your production clusters.
 
 ## Target Audience
 
@@ -16,17 +16,18 @@ The target audience for this tutorial is someone who has a working knowledge of 
 - Docker 1.13.x
 - Kubernetes 1.9.2
 
-## Warnings and Considerations
+## Pre-Requisite Tools
 
-TODO
+- bash
+- git
+- AWS cli tools
+- Valid AWS Account Credentials with full ec2 permissons
+- dig
+- kubectl 
 
-## Assumptions
+## The (Purposefully) Insecure Cluster
 
-TODO
-
-## The (Purposefully) Least Secure Cluster
-
-### Systems Inventory
+### Cluster Details
 
 - Etcd
 - Master
@@ -44,15 +45,15 @@ TODO
 - Launch and configure the ```master``` instance
 - Launch and configure the ```worker-1``` and ```worker-2``` instance
 
-## Deploy Sample Workloads
+## Deploy Admin Workloads
 
-### Azure Vote App
+- Heapster
+- Dashboard
 
-TODO
-
-### Dashboard
-
-TODO
+## Deploy Application Workloads
+- Nginx
+- Vulnapp
+- Azure Vote App
 
 ## Event #1 - Pentest - Direct, External Network Attacks
 
@@ -199,12 +200,3 @@ TODO
 - Delete Instances
 - Delete Old Keys and Configs
 - Delete VPC
-
-
-
-
-
-
-
-
-
