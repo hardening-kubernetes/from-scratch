@@ -2,7 +2,7 @@
 
 The community continues to benefit from [Kubernetes the Hard Way](https://github.com/kelseyhightower/kubernetes-the-hard-way) by Kelsey Hightower in understanding how each of the components work together and are configured in a reasonably secure manner, step-by-step.  In a similar manner but using a slightly different approach, this guide attempts to demonstrate how the security-related settings inside ```kubernetes``` actually work from the ground up, one change at a time, validated by real attacks where possible.
 
-By following this guide, you will configure one of the least secure clusters possible at the start. Each step will attempt to follow the pattern of a) educate, b) attack, c) harden, and d) verify in order of security importance and maturity.  Upon completion of the guide, you will have successfully hacked your cluster several times over and now fully understand all the necessary configuration changes to prevent each one from happening.
+By following this guide, you will configure one of the *least secure* clusters possible at the start. Each step will attempt to follow the pattern of a) educate, b) attack, c) harden, and d) verify in order of security importance and maturity.  Upon completion of the guide, you will have successfully hacked your cluster several times over and now fully understand all the necessary configuration changes to prevent each one from happening.
 
 > The cluster built in this tutorial is not production ready--especially at the beginning--but the concepts learned are definitely applicable to your production clusters.
 
