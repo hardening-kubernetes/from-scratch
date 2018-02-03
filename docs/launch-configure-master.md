@@ -228,7 +228,7 @@ sudo systemctl restart kube-apiserver kube-controller-manager kube-scheduler kub
 ## Routing the Pod CIDR for ```kubenet```
 
 Obtain the Route Table ID
-```
+```sh
 ROUTETABLE_ID=$(aws ec2 describe-route-tables --region ${AWS_DEFAULT_REGION} --filter "Name=tag:Name,Values=${STACK_NAME}-rt" --query 'RouteTables[*].RouteTableId' --output text)
 ```
 
@@ -256,3 +256,5 @@ controller-manager   Healthy   ok
 scheduler            Healthy   ok
 etcd-0               Healthy   {"health": "true"}
 ```
+
+[Back](README.md) | [Next](docs/launch-configure-workers.md)

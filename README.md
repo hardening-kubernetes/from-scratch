@@ -55,14 +55,15 @@ TODO
 6. [cfssl](docs/install-cfssl.md)
 
 #### Build the Cluster
-1. [Create the VPC](docs/launch-configure-vpc.md)
+1. [Create the VPC](docs/create-vpc.md)
 2. [Launch and configure the ```etcd``` instance](docs/launch-configure-etcd.md)
 3. [Launch and configure the ```master``` instance](docs/launch-configure-master.md)
 4. [Launch and configure the ```worker-1``` and ```worker-2``` instance](docs/launch-configure-workers.md)
 
 #### Level 0 Security
-1. [Deploy Heapster](docs/deploy-heapster.md)
-2. [Deploy Dashboard](docs/deploy-basic-dashboard.md)
+1. [Deploy kube-dns](docs/deploy-kube-dns.md)
+2. [Deploy Heapster](docs/deploy-heapster.md)
+3. [Deploy Dashboard](docs/deploy-basic-dashboard.md)
 
 #### Level 0 Attacks
 1. Scan Ports
@@ -129,5 +130,7 @@ TODO
 
 ### Clean Up
 1. [Delete Instances](docs/delete-instances.md)
-2. [Delete Old Keys and Configs](docs/delete-keys-configs.md)
-3. [Delete VPC](docs/delete-vpc.md)
+2. [Delete VPC](docs/delete-vpc.md)
+
+## Next Steps
+- Kubernetes the Hard Way

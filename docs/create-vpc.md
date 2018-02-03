@@ -43,3 +43,5 @@ Create a new SSH keypair
 aws ec2 create-key-pair --region ${AWS_DEFAULT_REGION} --key-name ${KEY_NAME} --query 'KeyMaterial' --output text > ${KEY_NAME}.pem
 chmod 600 ${KEY_NAME}.pem
 ```
+
+[Back](README.md) | [Next](docs/launch-configure-etcd.md)
