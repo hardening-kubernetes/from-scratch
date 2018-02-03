@@ -11,7 +11,7 @@ export AWS_DEFAULT_REGION="us-east-1"
 export KEY_NAME="hkfs"
 export IMAGE_ID="ami-66506c1c"
 
-aws cloudformation create-stack --region ${AWS_DEFAULT_REGION} --stack-name ${STACK_NAME} --template-body file://${STACK_NAME}.json --output text
+aws cloudformation create-stack --region ${AWS_DEFAULT_REGION} --stack-name ${STACK_NAME} --template-body file://templates/${STACK_NAME}.json --output text
 
 ```
 
