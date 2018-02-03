@@ -1,8 +1,8 @@
 # Hardening Kubernetes from Scratch
 
-The community continues to benefit from  ```kubernetes-the-hard-way``` by Kelsey Hightower in understanding how each of the components work together and are configured in a secure manner, step-by-step.  In a similar manner but using a slightly different approach, this guide seeks to demonstrate how the security-related settings inside ```kubernetes``` and ```etcd``` actually work from the ground up, one change at a time, validated by real attacks.
+The community continues to benefit from  ```kubernetes-the-hard-way``` by Kelsey Hightower in understanding how each of the components work together and are configured in a reasonably secure manner, step-by-step.  In a similar manner but using a slightly different approach, this guide attempts to demonstrate how the security-related settings inside ```kubernetes``` actually work from the ground up, one change at a time, validated by real attacks where possible.
 
-By following this guide, you will configure one of the least secure clusters possible at the start. Each step will attempt to follow the pattern of a) educate, b) attack, c) harden, and d) verify in order of security importance and maturity.  Upon completion of the guide, you will have successfully hacked your cluster several times over and now fully understand all the necessary configuration changes to prevent each one from ever happening again.
+By following this guide, you will configure one of the least secure clusters possible at the start. Each step will attempt to follow the pattern of a) educate, b) attack, c) harden, and d) verify in order of security importance and maturity.  Upon completion of the guide, you will have successfully hacked your cluster several times over and now fully understand all the necessary configuration changes to prevent each one from happening.
 
 > The cluster built in this tutorial is not production ready--especially at the beginning--but the concepts learned are definitely applicable to your production clusters.
 
@@ -10,193 +10,124 @@ By following this guide, you will configure one of the least secure clusters pos
 
 The target audience for this tutorial is someone who has a working knowledge of running a Kubernetes cluster (or has completed the ```kubernetes-the-hard-way``` tutorial) and wants to understand how each security-related setting works at a deep level.
 
-## Versions Targeted
+## Cluster Software Details
 
+- AWS VPC/EC2
 - Ubuntu 16.0.4 LTS
 - Docker 1.13.x
+- CNI 0.6.0
+- etcd 3.2.11
 - Kubernetes 1.9.2
 
 ## Pre-Requisite Tools
 
+- AWS Account Credentials
+  - Create/delete VPC (subnets, route tables, internet gateways)
+  - Create/delete Cloudformation
+  - Create/delete EC2 * (security groups, keypairs, instances)
+- AWS cli tools configured to use said account
 - bash
 - git
-- AWS cli tools
-- Valid AWS Account Credentials with full ec2 permissons
 - dig
-- kubectl 
+- kubectl (v1.9.2)
 
 ## The (Purposefully) Insecure Cluster
 
-### Cluster Details
+### Cluster System Details
 
-- Etcd
-- Master
-- Worker1
-- Worker2
+- Etcd - t2.micro (10.1.0.5)
+- Master - t2.small (10.1.0.10)
+- Worker1 - t2.small (10.1.0.11)
+- Worker2 - t2.small (10.1.0.12)
 
 ### Diagram/Structure
 
 TODO
 
-## Basic Infrastructure Installation
-
-- Create the VPC
-- Launch and configure the ```etcd``` instance
-- Launch and configure the ```master``` instance
-- Launch and configure the ```worker-1``` and ```worker-2``` instance
-
-## Deploy Admin Workloads
-
-- Heapster
-- Dashboard
-
-## Deploy Application Workloads
-- Nginx
-- Vulnapp
-- Azure Vote App
-
-## Event #1 - Pentest - Direct, External Network Attacks
-
-### Etcd
-
-curl etcd endpoint - SG
-
-### API
-
-curl API endpoint - SG
-
-### Kubelet
-
-curl Kubelet API - SG
-
-### NodePorts
-
-Port scan NodePorts - SG
-
-### Metrics
-
-Port scan - SG
-
-### Administrative SSH
-
-Admin - SG
-
-## Event #2  - Pentest - Kubernetes API Attacks
-
-### API Authentication
-
-#### No Auth
-
-TODO
-
-#### Basic Auth
-
-TODO
-
-#### TLS Authentication
-
-TODO
-
-## Event #3 - Another Admin Joins the Team
-
-### Shared Admin Credentials
-
-TODO
-
-### Separate Namespaces
-
-TODO
-
-### Namespace Resource Quota
-
-TODO
-
-## Event #4 - A Contract Developer Joins the Cluster
-
-### Sample Vuln Application - Image Sourcing
-
-TODO
-
-## Event #5 - Admin Leaves the Team
-
-###  Shared Admin Credentials
-
-TODO
-
-## Event #6 - In Production - Vote is Hacked
-
-### Investigation - Backdoored App
-
-TODO
-
-#### Open Etcd -> TLS
-
-TODO
-
-#### Kubernetes Insecure Port -> Remove
-
-TODO
-
-#### Admission Controllers -> Enable
-
-TODO
-
-#### RBAC -> Enable
-
-TODO
-
-#### Kubelet Authn/z -> Enable
-
-TODO
-
-#### Open Dashboard -> Upgrade
-
-TODO
-
-#### Pods can talk everywhere -> Enable Network Policy
-
-TODO
-
-#### Approved Image Sources
-
-TODO
-
-## Event #7 - New Admin Joins
-
-### Telemetry
-
-#### Metrics
-
-TODO
-
-#### Logging
-
-TODO
-
-### Helm/Tiller
-
-TODO
-
-### Istio Service Mesh
-
-TODO
-
-## Event #8 - Final Pentest - Advanced Hardening
-
-### Image Scanning
-
-TODO
-
-### PodSecurityPolicy
-
-TODO
-
-### Behavior Scanning
-
-TODO
-
-## Clean Up
-
-- Delete Instances
-- Delete Old Keys and Configs
-- Delete VPC
+### Labs
+
+#### Installing the Prerequisites
+1. [AWS](docs/install-aws.md)
+2. [bash](docs/install-bash.md)
+3. [git](docs/install-git.md)
+4. [dig](docs/install-dig.md)
+5. [kubectl](docs/install-kubectl.md)
+6. [cfssl](docs/install-cfssl.md)
+
+#### Build the Cluster
+1. [Create the VPC](docs/launch-configure-vpc.md)
+2. [Launch and configure the ```etcd``` instance](docs/launch-configure-etcd.md)
+3. [Launch and configure the ```master``` instance](docs/launch-configure-master.md)
+4. [Launch and configure the ```worker-1``` and ```worker-2``` instance](docs/launch-configure-workers.md)
+
+#### Level 0 Security
+1. [Deploy Heapster](docs/deploy-heapster.md)
+2. [Deploy Dashboard](docs/deploy-basic-dashboard.md)
+
+#### Level 0 Attacks
+1. Scan Ports
+2. etcdctl
+3. kubectl to API
+4. curl to Kubelet/metrics
+
+#### Level 1 Hardening
+1. Security Groups
+2. Etcd TLS
+3. Cluster TLS
+4. Admission Controllers
+
+#### Deploy Application Workloads
+1. Helm/Tiller
+2. Vulnapp
+3. Azure Vote App
+
+#### Level 1 Attacks
+1. Multi-tenant Misuse
+ - Too many Pods
+ - Too many CPU/RAM shares
+
+#### Level 2 Hardening
+1. Separate Namespaces
+2. Request/Limits on Pods
+3. Namespace Resource Quotas
+4. Metrics via Prometheus
+5. Optional multi-etcd, mult-master
+
+#### Level 2 Attacks
+1. Malicious Image, Compromised Container, Multi-tenant Misuse
+  - Service Account Tokens
+  - Dashboard Access
+  - Tiller Access
+  - Kubelet Exploit
+  - Application Tampering
+  - Metrics Scraping
+  - Metadata API
+  - Outbound Scanning/pivoting 
+
+#### Level 3 Hardening
+1. RBAC
+2. New Dashboard
+3. Separate Kubeconfigs per user
+4. Tiller TLS
+5. Kubelet Authn/z
+6. Network Policy/CNI
+7. Admission Controllers
+8. Logging?
+
+#### Level 4 Attacks
+1. Malicious Image, Compromised Container, Multi-tenant Misuse
+  - Escape the container
+
+#### Level 4 Hardening
+1. Advanced admission controllers
+2. Restrict images/sources
+3. Network Egress filtering
+4. Vuln scan images
+5. Pod Security Policy
+6. Encrypted etcd
+7. Sysdig Falco
+
+### Clean Up
+1. [Delete Instances](docs/delete-instances.md)
+2. [Delete Old Keys and Configs](docs/delete-keys-configs.md)
+3. [Delete VPC](docs/delete-vpc.md)
