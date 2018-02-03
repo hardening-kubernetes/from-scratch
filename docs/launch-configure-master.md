@@ -257,4 +257,4 @@ scheduler            Healthy   ok
 etcd-0               Healthy   {"health": "true"}
 ```
 
-[Back](README.md) | [Next](launch-configure-workers.md)
+[Back](/README.md) | [Next](launch-configure-workers.md)

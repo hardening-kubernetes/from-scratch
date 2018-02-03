@@ -1,3 +1,3 @@
 # Deploy the Kubernetes Dashboard
 
-[Back](README.md) | [Next](docs/.md)
+[Back](/README.md) | [Next](.md)

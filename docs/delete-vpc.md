@@ -11,4 +11,4 @@ Destroy the VPC via Cloudformation stack deletion
 aws cloudformation delete-stack --region ${AWS_DEFAULT_REGION} --stack-name ${STACK_NAME}
 ```
 
-[Back](README.md)
+[Back](/README.md)

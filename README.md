@@ -12,12 +12,13 @@ The target audience for this tutorial is someone who has a working knowledge of 
 
 ## Cluster Software Details
 
-- AWS VPC/EC2
-- Ubuntu 16.0.4 LTS
-- Docker 1.13.x
-- CNI 0.6.0
-- etcd 3.2.11
-- Kubernetes 1.9.2
+- [AWS EC2](https://aws.amazon.com/ec2/)
+- [Ubuntu 16.0.4 LTS](http://cloud-images.ubuntu.com/locator/ec2/) and search for '16.04 LTS hvm:ebs-ssd'
+- [Docker 1.13.x](https://www.docker.com)
+- [CNI Container Networking](https://github.com/containernetworking/cni) 0.6.0
+- [etcd](https://github.com/coreos/etcd) 3.2.11
+- [Kubernetes](https://github.com/kubernetes/kubernetes) 1.9.2
+
 
 ## Pre-Requisite Tools
 
@@ -30,6 +31,7 @@ The target audience for this tutorial is someone who has a working knowledge of 
 - git
 - dig
 - kubectl (v1.9.2)
+- cfssl
 
 ## The (Purposefully) Insecure Cluster
 
@@ -46,14 +48,6 @@ TODO
 
 ### Labs
 
-#### Installing the Prerequisites
-1. [AWS](docs/install-aws.md)
-2. [bash](docs/install-bash.md)
-3. [git](docs/install-git.md)
-4. [dig](docs/install-dig.md)
-5. [kubectl](docs/install-kubectl.md)
-6. [cfssl](docs/install-cfssl.md)
-
 #### Build the Cluster
 1. [Create the VPC](docs/create-vpc.md)
 2. [Launch and configure the ```etcd``` instance](docs/launch-configure-etcd.md)
@@ -62,8 +56,8 @@ TODO
 
 #### Level 0 Security
 1. [Deploy kube-dns](docs/deploy-kube-dns.md)
-2. [Deploy Heapster](docs/deploy-heapster.md)
-3. [Deploy Dashboard](docs/deploy-basic-dashboard.md)
+2. Deploy Heapster
+3. Deploy Dashboard
 
 #### Level 0 Attacks
 1. Scan Ports
