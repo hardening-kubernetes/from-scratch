@@ -44,4 +44,4 @@ aws ec2 create-key-pair --region ${AWS_DEFAULT_REGION} --key-name ${KEY_NAME} --
 chmod 600 ${KEY_NAME}.pem
 ```
 
-[Back](README.md) | [Next](launch-configure-etcd.md)
+[Back](/README.md) | [Next](launch-configure-etcd.md)
