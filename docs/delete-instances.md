@@ -42,4 +42,4 @@ SSH Keypair Deletion
 aws ec2 delete-key-pair --region ${AWS_DEFAULT_REGION} --key-name "${KEY_NAME}"
 ```
 
-[Back](README.md) | [Next](docs/delete-vpc.md)
+[Back](README.md) | [Next](delete-vpc.md)

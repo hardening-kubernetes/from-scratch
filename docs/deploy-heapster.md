@@ -1,4 +1,4 @@
 # Deploy Heapster
 
 
-[Back](README.md) | [Next](docs/deploy-basic-dashboard.md)
+[Back](README.md) | [Next](deploy-basic-dashboard.md)

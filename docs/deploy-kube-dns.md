@@ -209,4 +209,4 @@ EOF
 kubectl create -f kube-dns.yml
 ```
 
-[Back](README.md) | [Next](docs/deploy-heapster.md)
+[Back](README.md) | [Next](deploy-heapster.md)
