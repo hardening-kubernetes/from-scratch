@@ -3,12 +3,28 @@
 ## Instance Creation
 Create the ```etcd``` instance
 ```
-aws ec2 run-instances --region ${AWS_DEFAULT_REGION} --image-id ${IMAGE_ID} --count 1 --instance-type t2.micro --key-name ${KEY_NAME} --subnet-id ${SUBNET_ID} --associate-public-ip-address --query 'Instances[0].InstanceId' --output text --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=etcd}]' --private-ip-address 10.1.0.5 --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}'
+aws ec2 run-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --image-id ${IMAGE_ID} \
+  --count 1 \
+  --instance-type t2.micro \
+  --key-name ${KEY_NAME} \
+  --subnet-id ${SUBNET_ID} \
+  --associate-public-ip-address \
+  --query 'Instances[0].InstanceId' \
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=etcd}]' \
+  --private-ip-address 10.1.0.5 \
+  --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}' \
+  --output text
 ```
 
 When the instance is running, SSH in.
 ```
-ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=etcd' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
+ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --filter 'Name=tag:Name,Values=etcd' \
+  --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
+  --output text)
 ```
 
 ## Installation and Configuration
