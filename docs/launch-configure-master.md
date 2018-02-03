@@ -3,23 +3,50 @@
 ## Instance Creation
 Create the ```master``` instance
 ```
-aws ec2 run-instances --region ${AWS_DEFAULT_REGION} --image-id ${IMAGE_ID} --count 1 --instance-type t2.small --key-name ${KEY_NAME} --subnet-id ${SUBNET_ID} --associate-public-ip-address --query 'Instances[0].InstanceId' --output text --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=master}]' --private-ip-address 10.1.0.10 --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}'
+aws ec2 run-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --image-id ${IMAGE_ID} \
+  --count 1 \
+  --instance-type t2.small \
+  --key-name ${KEY_NAME} \
+  --subnet-id ${SUBNET_ID} \
+  --associate-public-ip-address \
+  --query 'Instances[0].InstanceId' \
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=master}]' \
+  --private-ip-address 10.1.0.10 \
+  --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}' \
+  --output text
 ```
 
 When the instance is running, SSH in.
 ```
-ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
+ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --filter 'Name=tag:Name,Values=master' \
+  --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
+  --output text)
 ```
 ## Installation and Configuration
 
 Disable Source/Destination Checking for ```kube-proxy```
 ```
-aws ec2 modify-instance-attribute --region ${AWS_DEFAULT_REGION} --no-source-dest-check --instance-id "$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].InstanceId' --output text)"
+aws ec2 modify-instance-attribute \
+  --region ${AWS_DEFAULT_REGION} \
+  --no-source-dest-check \
+  --instance-id "$(aws ec2 describe-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --filter 'Name=tag:Name,Values=master' \
+  --query 'Reservations[].Instances[].InstanceId' \
+  --output text)"
 ```
 
 SSH Into the ```master``` Instance
 ```
-ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
+ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --filter 'Name=tag:Name,Values=master' \
+  --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
+  --output text)
 ```
 
 Install Docker and Other Necessary Binaries
@@ -30,7 +57,10 @@ sudo apt-get install docker.io socat conntrack --yes
 
 Configure and Start Docker
 ```
-echo "DOCKER_OPTS=--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay" | sudo tee -a /etc/default/docker
+echo "DOCKER_OPTS=--ip-masq=false --iptables=false \
+--log-driver=json-file --log-level=warn --log-opt=max-file=5 \
+--log-opt=max-size=10m \
+--storage-driver=overlay" | sudo tee -a /etc/default/docker
 sudo systemctl daemon-reload
 sudo systemctl restart docker.service
 ```
@@ -60,7 +90,8 @@ wget -q --show-progress --https-only --timestamping \
 Make the Kubernetes Binaries Executable and Place them in the PATH
 ```
 chmod +x kube-apiserver kube-controller-manager kube-scheduler kubectl kubelet kube-proxy
-sudo mv kube-apiserver kube-controller-manager kube-scheduler kubectl kubelet kube-proxy /usr/local/bin/
+sudo mv kube-apiserver kube-controller-manager kube-scheduler \
+  kubectl kubelet kube-proxy /usr/local/bin/
 ```
 
 Create Supporting Directories
@@ -217,29 +248,41 @@ EOF
 Place the Systemd Units and Start All Services
 ```
 sudo mv kubeconfig /var/lib/kubelet/kubeconfig
-sudo mv kube-apiserver.service kube-scheduler.service kube-controller-manager.service kubelet.service kube-proxy.service /etc/systemd/system/
+sudo mv kube-apiserver.service kube-scheduler.service kube-controller-manager.service \
+  kubelet.service kube-proxy.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable kube-apiserver kube-controller-manager kube-scheduler kubelet kube-proxy
 sudo systemctl restart kube-apiserver kube-controller-manager kube-scheduler kubelet kube-proxy
 ```
 
-
-
 ## Routing the Pod CIDR for ```kubenet```
 
 Obtain the Route Table ID
 ```sh
-ROUTETABLE_ID=$(aws ec2 describe-route-tables --region ${AWS_DEFAULT_REGION} --filter "Name=tag:Name,Values=${STACK_NAME}-rt" --query 'RouteTables[*].RouteTableId' --output text)
+ROUTETABLE_ID=$(aws ec2 describe-route-tables \
+  --region ${AWS_DEFAULT_REGION} \
+  --filter "Name=tag:Name,Values=${STACK_NAME}-rt" \
+  --query 'RouteTables[*].RouteTableId' \
+  --output text)
 ```
 
 Obtain the ```master``` ENI ID
 ```
-MASTERENI_ID=$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' --output text)
+MASTERENI_ID=$(aws ec2 describe-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --filter 'Name=tag:Name,Values=master' \
+  --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' \
+  --output text)
 ```
 
 Add the ```master``` Pod CIDR Route to the Route Table
 ```
-aws ec2 create-route --region ${AWS_DEFAULT_REGION} --route-table-id ${ROUTETABLE_ID} --network-interface-id ${MASTERENI_ID} --destination-cidr-block '10.2.0.0/24' --output text
+aws ec2 create-route \
+  --region ${AWS_DEFAULT_REGION} \
+  --route-table-id ${ROUTETABLE_ID} \
+  --network-interface-id ${MASTERENI_ID} \
+  --destination-cidr-block '10.2.0.0/24' \
+  --output text
 ```
 
 ## Validation

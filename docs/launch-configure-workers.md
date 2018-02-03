@@ -4,17 +4,40 @@
 
 Create the ```worker-1``` instance
 ```
-aws ec2 run-instances --region ${AWS_DEFAULT_REGION} --image-id ${IMAGE_ID} --count 1 --instance-type t2.small --key-name ${KEY_NAME} --subnet-id ${SUBNET_ID} --associate-public-ip-address --query 'Instances[0].InstanceId' --output text --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=worker-1}]' --private-ip-address 10.1.0.11 --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}'
+aws ec2 run-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --image-id ${IMAGE_ID} \
+  --count 1 \
+  --instance-type t2.small \
+  --key-name ${KEY_NAME} \
+  --subnet-id ${SUBNET_ID} \
+  --associate-public-ip-address \
+  --query 'Instances[0].InstanceId' \
+  --output text \
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=worker-1}]' \
+  --private-ip-address 10.1.0.11 \
+  --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}'
 ```
 
 Disable Source/Destination Checking for ```kube-proxy```
 ```
-aws ec2 modify-instance-attribute --region ${AWS_DEFAULT_REGION} --no-source-dest-check --instance-id "$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=worker-1' --query 'Reservations[].Instances[].InstanceId' --output text)"
+aws ec2 modify-instance-attribute \
+  --region ${AWS_DEFAULT_REGION} \
+  --no-source-dest-check \
+  --instance-id "$(aws ec2 describe-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --filter 'Name=tag:Name,Values=worker-1' \
+  --query 'Reservations[].Instances[].InstanceId' \
+  --output text)"
 ```
 
 When the instance is running, SSH in.
 ```
-ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=worker-1' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
+ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --filter 'Name=tag:Name,Values=worker-1' \
+  --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
+  --output text)
 ```
 
 ## Installation and Configuration
@@ -27,7 +50,10 @@ sudo apt-get install docker.io socat conntrack --yes
 
 Configure and Start Docker
 ```
-echo "DOCKER_OPTS=--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay" | sudo tee -a /etc/default/docker
+echo "DOCKER_OPTS=--ip-masq=false --iptables=false \
+--log-driver=json-file --log-level=warn \
+--log-opt=max-file=5 --log-opt=max-size=10m \
+--storage-driver=overlay" | sudo tee -a /etc/default/docker
 sudo systemctl daemon-reload
 sudo systemctl restart docker.service
 ```
@@ -157,17 +183,40 @@ sudo systemctl restart kubelet kube-proxy
 
 Create the ```worker-2``` instance
 ```
-aws ec2 run-instances --region ${AWS_DEFAULT_REGION} --image-id ${IMAGE_ID} --count 1 --instance-type t2.small --key-name ${KEY_NAME} --subnet-id ${SUBNET_ID} --associate-public-ip-address --query 'Instances[0].InstanceId' --output text --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=worker-2}]' --private-ip-address 10.1.0.12 --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}'
+aws ec2 run-instances 
+  --region ${AWS_DEFAULT_REGION} \
+  --image-id ${IMAGE_ID} \
+  --count 1 \
+  --instance-type t2.small \
+  --key-name ${KEY_NAME} \
+  --subnet-id ${SUBNET_ID} \
+  --associate-public-ip-address \
+  --query 'Instances[0].InstanceId' \
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=worker-2}]' \
+  --private-ip-address 10.1.0.12 \
+  --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}' \
+  --output text
 ```
 
 Disable Source/Destination Checking for ```kube-proxy```
 ```
-aws ec2 modify-instance-attribute --region ${AWS_DEFAULT_REGION} --no-source-dest-check --instance-id "$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=worker-2' --query 'Reservations[].Instances[].InstanceId' --output text)"
+aws ec2 modify-instance-attribute \
+  --region ${AWS_DEFAULT_REGION} \
+  --no-source-dest-check \
+  --instance-id "$(aws ec2 describe-instances \
+    --region ${AWS_DEFAULT_REGION} \
+    --filter 'Name=tag:Name,Values=worker-2' \
+    --query 'Reservations[].Instances[].InstanceId' \
+    --output text)"
 ```
 
 When the instance is running, SSH in.
 ```
-ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=worker-2' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
+ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --filter 'Name=tag:Name,Values=worker-2' \
+  --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
+  --output text)
 ```
 
 ## Installation and Configuration
@@ -180,7 +229,10 @@ sudo apt-get install docker.io socat conntrack --yes
 
 Configure and Start Docker
 ```
-echo "DOCKER_OPTS=--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay" | sudo tee -a /etc/default/docker
+echo "DOCKER_OPTS=--ip-masq=false --iptables=false \
+--log-driver=json-file --log-level=warn \
+--log-opt=max-file=5 --log-opt=max-size=10m \
+--storage-driver=overlay" | sudo tee -a /etc/default/docker
 sudo systemctl daemon-reload
 sudo systemctl restart docker.service
 ```
@@ -310,27 +362,49 @@ sudo systemctl restart kubelet kube-proxy
 
 Obtain the Route Table ID
 ```sh
-ROUTETABLE_ID=$(aws ec2 describe-route-tables --region ${AWS_DEFAULT_REGION} --filter "Name=tag:Name,Values=${STACK_NAME}-rt" --query 'RouteTables[*].RouteTableId' --output text)
+ROUTETABLE_ID=$(aws ec2 describe-route-tables \
+  --region ${AWS_DEFAULT_REGION} \
+  --filter "Name=tag:Name,Values=${STACK_NAME}-rt" \
+  --query 'RouteTables[*].RouteTableId' \
+  --output text)
 ```
 
 Obtain the ```worker-1``` ENI ID
 ```
-WORKER1ENI_ID=$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=worker-1' --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' --output text)
+WORKER1ENI_ID=$(aws ec2 describe-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --filter 'Name=tag:Name,Values=worker-1' \
+  --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' \
+  --output text)
 ```
 
 Add the ```worker-1``` Pod CIDR Route to the Route Table
 ```
-aws ec2 create-route --region ${AWS_DEFAULT_REGION} --route-table-id ${ROUTETABLE_ID} --network-interface-id ${WORKER1ENI_ID} --destination-cidr-block '10.2.1.0/24' --output text
+aws ec2 create-route \
+  --region ${AWS_DEFAULT_REGION} \
+  --route-table-id ${ROUTETABLE_ID} \
+  --network-interface-id ${WORKER1ENI_ID} \
+  --destination-cidr-block '10.2.1.0/24' \
+  --output text
 ```
 
 Obtain the ```worker-2``` ENI ID
 ```
-WORKER2ENI_ID=$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=worker-2' --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' --output text)
+WORKER2ENI_ID=$(aws ec2 describe-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --filter 'Name=tag:Name,Values=worker-2' \
+  --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' \
+  --output text)
 ```
 
 Add the ```worker-1``` Pod CIDR Route to the Route Table
 ```
-aws ec2 create-route --region ${AWS_DEFAULT_REGION} --route-table-id ${ROUTETABLE_ID} --network-interface-id ${WORKER2ENI_ID} --destination-cidr-block '10.2.2.0/24' --output text
+aws ec2 create-route \
+  --region ${AWS_DEFAULT_REGION} \
+  --route-table-id ${ROUTETABLE_ID} \
+  --network-interface-id ${WORKER2ENI_ID} \
+  --destination-cidr-block '10.2.2.0/24' \
+  --output text
 ```
 
 ## Validation
