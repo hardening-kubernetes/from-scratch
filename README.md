@@ -6,11 +6,15 @@ The community continues to benefit from  ```kubernetes-the-hard-way``` by Kelsey
 
 By following this guide, you will configure one of the least secure clusters possible at the start. Each step will attempt to follow the pattern of a) educate, b) attack, c) harden, and d) verify in order of security importance and maturity.  Upon completion of the guide, you will have successfully hacked your cluster several times over and now fully understand all the necessary configuration changes to prevent each one from ever happening again.
 
+## Target Audience
+
+The target audience for this tutorial is someone who has a working knowledge of running a Kubernetes cluster (or has completed the ```kubernetes-the-hard-way``` tutorial) and wants to understand how each security-related setting works at a deep level.
+
 ## Versions Targeted
 
-- Ubuntu 16.0.4.5
-- Docker 17.x
-- Kubernetes 1.9.x
+- Ubuntu 16.0.4 LTS
+- Docker 1.13.x
+- Kubernetes 1.9.2
 
 ## Warnings and Considerations
 
@@ -35,45 +39,10 @@ TODO
 
 ## Basic Infrastructure Installation
 
-### Create the VPC
-
-TODO
-
-### Create the Subnets
-
-TODO
-
-### Create the Security Group
-
-TODO
-
-### Validate SSH Access
-
-TODO
-
-### Install Pre-requisites
-
-TODO
-
-## Install Etcd and Kubernetes
-
-### Etcd
-
-#### Etcd
-
-TODO
-
-### Master
-
-#### Kubernetes API Server, Scheduler, Controller Manager, Kubelet, Kube-Proxy
-
-TODO
-
-### Workers
-
-#### Kubelet, Kube-Proxy
-
-TODO
+- Create the VPC
+- Launch and configure the ```etcd``` instance
+- Launch and configure the ```master``` instance
+- Launch and configure the ```worker-1``` and ```worker-2``` instance
 
 ## Deploy Sample Workloads
 
@@ -228,8 +197,7 @@ TODO
 ## Clean Up
 
 - Delete Instances
-- Delete Security Group
-- Delete Subnet
+- Delete Old Keys and Configs
 - Delete VPC
 
 
