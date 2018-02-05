@@ -56,7 +56,7 @@ TODO
 
 #### Level 0 Security
 1. [Deploy kube-dns](docs/deploy-kube-dns.md)
-2. Deploy Heapster
+2. [Deploy Heapster](docs/deploy-heapster.md)
 3. Deploy Dashboard
 
 #### Level 0 Attacks
