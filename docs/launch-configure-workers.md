@@ -2,7 +2,7 @@
 
 ## ```worker-1``` Instance Creation
 
-Create the ```worker-1``` instance
+From the same installation system shell, create the ```worker-1``` instance
 ```
 aws ec2 run-instances \
   --region ${AWS_DEFAULT_REGION} \
@@ -179,11 +179,13 @@ sudo systemctl enable kubelet kube-proxy
 sudo systemctl restart kubelet kube-proxy
 ```
 
+Exit the ```worker-1``` instance SSH session to return to the installation system shell.
+
 ## ```worker-2``` Instance Creation
 
-Create the ```worker-2``` instance
+From the same installation system shell, create the ```worker-2``` instance
 ```
-aws ec2 run-instances 
+aws ec2 run-instances \
   --region ${AWS_DEFAULT_REGION} \
   --image-id ${IMAGE_ID} \
   --count 1 \
@@ -358,6 +360,8 @@ sudo systemctl enable kubelet kube-proxy
 sudo systemctl restart kubelet kube-proxy
 ```
 
+Exit the ```worker-2``` instance SSH session to return to the installation system shell.
+
 ## Routing the Pod CIDR for ```kubenet```
 
 Obtain the Route Table ID
@@ -409,7 +413,16 @@ aws ec2 create-route \
 
 ## Validation
 
-Ensure the Nodes have Joined
+SSH into the master instance
+```
+ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --filter 'Name=tag:Name,Values=master' \
+  --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
+  --output text)
+```
+
+Ensure all the nodes have joined:
 ```
 kubectl get nodes
 NAME           STATUS    ROLES     AGE       VERSION

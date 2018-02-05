@@ -1,7 +1,8 @@
 # Launch and Configure the ```etcd``` Instance
 
 ## Instance Creation
-Create the ```etcd``` instance
+
+From the same shell on installation system, create the ```etcd``` instance
 ```
 aws ec2 run-instances \
   --region ${AWS_DEFAULT_REGION} \
@@ -79,5 +80,6 @@ Verify ```etcd``` is Running Properly
 ETCDCTL_API=3 etcdctl member list
 b8ae04a310fbeaf8, started, ip-10-10-10-5, http://10.1.0.5:2380, http://10.1.0.5:2379
 ```
+Exit the ```etcd``` instance SSH session to return to the installation system shell.
 
 [Back](/README.md) | [Next](launch-configure-master.md)

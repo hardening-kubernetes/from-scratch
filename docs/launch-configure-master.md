@@ -1,7 +1,7 @@
 # Launch and Configure the ```master``` Instance
 
 ## Instance Creation
-Create the ```master``` instance
+From the same shell on the installation system, create the ```master``` instance
 ```
 aws ec2 run-instances \
   --region ${AWS_DEFAULT_REGION} \
@@ -18,16 +18,6 @@ aws ec2 run-instances \
   --output text
 ```
 
-When the instance is running, SSH in.
-```
-ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
-  --region ${AWS_DEFAULT_REGION} \
-  --filter 'Name=tag:Name,Values=master' \
-  --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
-  --output text)
-```
-## Installation and Configuration
-
 Disable Source/Destination Checking for ```kube-proxy```
 ```
 aws ec2 modify-instance-attribute \
@@ -39,6 +29,8 @@ aws ec2 modify-instance-attribute \
   --query 'Reservations[].Instances[].InstanceId' \
   --output text)"
 ```
+
+## Installation and Configuration
 
 SSH Into the ```master``` Instance
 ```
@@ -255,6 +247,8 @@ sudo systemctl enable kube-apiserver kube-controller-manager kube-scheduler kube
 sudo systemctl restart kube-apiserver kube-controller-manager kube-scheduler kubelet kube-proxy
 ```
 
+Exit the ```master``` instance SSH session to return to the installation system shell.
+
 ## Routing the Pod CIDR for ```kubenet```
 
 Obtain the Route Table ID
@@ -287,7 +281,16 @@ aws ec2 create-route \
 
 ## Validation
 
-Verify that the cluster components are running and healthy.
+SSH Into the ```master``` Instance
+```
+ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --filter 'Name=tag:Name,Values=master' \
+  --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
+  --output text)
+```
+
+Verify that the cluster control plane components are running and healthy.
 ```
 kubectl get componentstatuses
 ```
@@ -299,5 +302,7 @@ controller-manager   Healthy   ok
 scheduler            Healthy   ok
 etcd-0               Healthy   {"health": "true"}
 ```
+
+Exit the ```master``` instance SSH session to return to the installation system shell.
 
 [Back](/README.md) | [Next](launch-configure-workers.md)
