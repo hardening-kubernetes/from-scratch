@@ -1,15 +1,6 @@
 # Deploy ```kube-dns```
 
-SSH Into the ```master``` Instance
-```
-ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
-  --region ${AWS_DEFAULT_REGION} \
-  --filter 'Name=tag:Name,Values=master' \
-  --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
-  --output text)
-```
-
-Create the ```kube-dns.yml``` Definition
+From the same installation system shell, create the ```kube-dns.yml``` Definition
 
 ```
 cat > kube-dns.yml <<EOF

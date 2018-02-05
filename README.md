@@ -53,11 +53,12 @@ TODO
 2. [Launch and configure the ```etcd``` instance](docs/launch-configure-etcd.md)
 3. [Launch and configure the ```master``` instance](docs/launch-configure-master.md)
 4. [Launch and configure the ```worker-1``` and ```worker-2``` instance](docs/launch-configure-workers.md)
+5. [Create the local ```kubeconfig``` file](docs/create-kubeconfig.md)
 
 #### Level 0 Security
 1. [Deploy kube-dns](docs/deploy-kube-dns.md)
 2. [Deploy Heapster](docs/deploy-heapster.md)
-3. Deploy Dashboard
+3. [Deploy Dashboard](docs/deploy-basic-dashboard.md)
 
 #### Level 0 Attacks
 1. Scan Ports

@@ -431,4 +431,4 @@ ip-10-1-0-11   Ready     <none>    2m        v1.9.2
 ip-10-1-0-12   Ready     <none>    46s       v1.9.2
 ```
 
-[Back](/README.md) | [Next](deploy-kube-dns.md)
+[Back](/README.md) | [Next](create-kubeconfig.md)
