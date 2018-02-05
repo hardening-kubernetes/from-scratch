@@ -84,19 +84,21 @@ kubectl create -f basic-dashboard.yml
 ## Validation
 ```
 kubectl get pods --all-namespaces
-NAMESPACE     NAME                        READY     STATUS    RESTARTS   AGE
-kube-system   heapster-d7c4b86d4-mdsps    1/1       Running   0          1m
-kube-system   kube-dns-68886d5985-sht75   3/3       Running   0          2m
+NAMESPACE     NAME                                   READY     STATUS    RESTARTS   AGE
+kube-system   heapster-555f7f75b6-vcz4p              1/1       Running   0          5m
+kube-system   kube-dns-68886d5985-sht75              3/3       Running   0          7m
+kube-system   kubernetes-dashboard-5b575fd4c-77fqr   1/1       Running   0          1m
 ```
 
 Get the dashboard pod name
 ```
-POD_NAME=$(kubectl )
+POD_NAME=$(kubectl get pods -l k8s-app=kubernetes-dashboard -n kube-system -o jsonpath="{.items[0].metadata.name}")
 ```
 
 Open a local port (8000) forwarded to the pod port (9090)
 ```
-kubectl port-forward $POD_NAME 8000:9090
+kubectl port-forward -n kube-system $POD_NAME 8000:9090
+Forwarding from 127.0.0.1:8000 -> 9090
 ```
 
 In a browser, visit:
