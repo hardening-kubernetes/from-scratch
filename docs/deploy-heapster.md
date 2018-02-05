@@ -33,7 +33,7 @@ spec:
         imagePullPolicy: IfNotPresent
         command:
         - /heapster
-        - --source=kubernetes:http://kubernetes.default?inClusterConfig=false&useServiceAccount=false
+        - --source=kubernetes:http://10.1.0.10:8080?inClusterConfig=false&useServiceAccount=false
 ---
 apiVersion: v1
 kind: Service
