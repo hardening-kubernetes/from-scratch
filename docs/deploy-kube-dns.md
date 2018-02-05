@@ -1,5 +1,14 @@
 # Deploy ```kube-dns```
 
+SSH Into the ```master``` Instance
+```
+ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
+  --region ${AWS_DEFAULT_REGION} \
+  --filter 'Name=tag:Name,Values=master' \
+  --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
+  --output text)
+```
+
 Create the ```kube-dns.yml``` Definition
 
 ```
@@ -204,9 +213,19 @@ spec:
 EOF
 ```
 
-## Validation
+## Deployment
 ```
 kubectl create -f kube-dns.yml
+service "kube-dns" created
+configmap "kube-dns" created
+deployment "kube-dns" created
+```
+
+## Validation
+```
+kubectl get pods --all-namespaces
+NAMESPACE     NAME                        READY     STATUS    RESTARTS   AGE
+kube-system   kube-dns-68886d5985-sht75   3/3       Running   0          1m
 ```
 
 [Back](/README.md) | [Next](deploy-heapster.md)
