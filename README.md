@@ -13,7 +13,7 @@ The target audience for this tutorial is someone who has a working knowledge of 
 ## Cluster Software Details
 
 - [AWS EC2](https://aws.amazon.com/ec2/)
-- [Ubuntu 16.0.4 LTS](http://cloud-images.ubuntu.com/locator/ec2/) and search for '16.04 LTS hvm:ebs-ssd'
+- [Ubuntu 16.0.4 LTS](http://cloud-images.ubuntu.com/locator/ec2/) and search for `16.04 LTS hvm:ebs-ssd`
 - [Docker 1.13.x](https://www.docker.com)
 - [CNI Container Networking](https://github.com/containernetworking/cni) 0.6.0
 - [etcd](https://github.com/coreos/etcd) 3.2.11
@@ -22,7 +22,7 @@ The target audience for this tutorial is someone who has a working knowledge of 
 
 ## Pre-Requisite Tools
 
-- AWS Account Credentials
+- AWS Account Credentials with permissions to:
   - Create/delete VPC (subnets, route tables, internet gateways)
   - Create/delete Cloudformation
   - Create/delete EC2 * (security groups, keypairs, instances)
@@ -42,13 +42,20 @@ The target audience for this tutorial is someone who has a working knowledge of 
 - Worker1 - t2.small (10.1.0.11)
 - Worker2 - t2.small (10.1.0.12)
 
+AWS costs in `us-east-1` are just under $2/day.
+
 ### Diagram/Structure
 
-TODO
+![Cluster Architecture](img/arch.png)
+
+To keep things simple, this guide is based on a single VPC, single availability zone, single subnet architecture where all nodes have static private IPs, are assigned public IPs to enable direct SSH access, and share a security group that allows each node to have full network access to each other.
 
 ### Labs
 
 #### Build the Cluster
+
+These steps will guide you through creating the VPC, subnet, instances, and basic cluster configuration without any hardening measures in place.  Pay special attention to the configuration of the security group to ensure only you have access to these systems!
+
 1. [Create the VPC](docs/create-vpc.md)
 2. [Launch and configure the ```etcd``` instance](docs/launch-configure-etcd.md)
 3. [Launch and configure the ```master``` instance](docs/launch-configure-master.md)
@@ -56,38 +63,52 @@ TODO
 5. [Create the local ```kubeconfig``` file](docs/create-kubeconfig.md)
 
 #### Level 0 Security
+
+The following items are to be deployed to fulfill basic Kubernetes cluster functionality.  The steps purposefully omit any security-related configuration/hardening.
+
 1. [Deploy kube-dns](docs/deploy-kube-dns.md)
 2. [Deploy Heapster](docs/deploy-heapster.md)
 3. [Deploy Dashboard](docs/deploy-basic-dashboard.md)
 
 #### Level 0 Attacks
-1. Scan Ports
-2. etcdctl
-3. kubectl to API
-4. curl to Kubelet/metrics
+
+At this most basic level, "Level 0", the current configuration offers very little (if any) protection from attacks that can take complete control of the the cluster and its nodes.
+
+1. Enumerate exposed ports on the nodes and identify their corresponding services
+2. Directly access Etcd to compromise the data store
+3. Directly access the Kubernetes API
+4. Directly access the Kubelet APIs
 
 #### Level 1 Hardening
-1. Security Groups
-2. Etcd TLS
-3. Cluster TLS
-4. Admission Controllers
+
+Ouch! The security configuration of "Level 0" is not resistant to remote attacks.  Let's do the very basic steps to prevent the "Level 0" attacks from being so straightforward.
+
+1. Improve the security group configuration
+2. Enable TLS on Etcd communications
+3. Enable TLS on the externally exposed Kubernetes API
 
 #### Deploy Application Workloads
-1. Helm/Tiller
-2. Vulnapp
-3. Azure Vote App
+
+With that modest amount of hardening, it's time to have this cluster perform some work.  To do that, we'll want to install [Helm](https://helm.sh) and its in-cluster helper, "Tiller".  With that in place, we'll deploy two sample applications via Helm Charts.
+
+1. Install Helm/Tiller
+2. Install the Vulnapp
+3. Install the Azure Vote App
 
 #### Level 1 Attacks
-1. Multi-tenant Misuse
- - Too many Pods
- - Too many CPU/RAM shares
 
+At this point, there are some fundamental resource exhaustion problems that authorized users may purposefully (or accidentally) trigger.  Without any boundaries in place, deploying too many pods or pods that consume too much CPU/RAM shares can cause serious cluster availability/Denial of Service issues.  When the cluster is "full", any new pods will not be scheduled.
+
+1. Launch too many pods
+2. Launch pods that consume too many CPU/RAM shares
 #### Level 2 Hardening
-1. Separate Namespaces
-2. Request/Limits on Pods
-3. Namespace Resource Quotas
-4. Metrics via Prometheus
-5. Optional multi-etcd, mult-master
+
+In order to provide the proper boundaries around workloads and their resources, using separate namespaces and corresponding resource quotas can prevent the "Level 1" issues.  
+
+1. Separate workloads using Namespaces
+2. Set specific Request/Limits on Pods
+3. Enforce Namespace Resource Quotas
+5. Discuss multi-etcd, multi-master
 
 #### Level 2 Attacks
 1. Malicious Image, Compromised Container, Multi-tenant Misuse
