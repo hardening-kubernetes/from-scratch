@@ -78,13 +78,13 @@ ROUTETABLE_ID=$(aws ec2 describe-route-tables --region ${AWS_DEFAULT_REGION} --f
 #### Obtain the ```controller``` ENI ID
 
 ```
-MASTERENI_ID=$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=controller' --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' --output text)
+CONTROLLERENI_ID=$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=controller' --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' --output text)
 ```
 
 #### Add the ```controller``` Pod CIDR Route to the Route Table
 
 ```
-aws ec2 create-route --region ${AWS_DEFAULT_REGION} --route-table-id ${ROUTETABLE_ID} --network-interface-id ${MASTERENI_ID} --destination-cidr-block '10.2.0.0/24' --output text
+aws ec2 create-route --region ${AWS_DEFAULT_REGION} --route-table-id ${ROUTETABLE_ID} --network-interface-id ${CONTROLLERENI_ID} --destination-cidr-block '10.2.0.0/24' --output text
 ```
 
 #### Obtain the ```worker-1``` ENI ID

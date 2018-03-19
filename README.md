@@ -38,7 +38,7 @@ The target audience for this tutorial is someone who has a working knowledge of 
 ### Cluster System Details
 
 - Etcd - t2.micro (10.1.0.5)
-- Master - t2.small (10.1.0.10)
+- Controller - t2.small (10.1.0.10)
 - Worker1 - t2.small (10.1.0.11)
 - Worker2 - t2.small (10.1.0.12)
 
@@ -76,7 +76,7 @@ At this most basic level, "Level 0", the current configuration offers very littl
 
 1. [Enumerate exposed ports](docs/enumerate-ports.md) on the nodes and identify their corresponding services
 2. [Probing Etcd](docs/direct-etcd.md) to compromise the data store
-3. [Probing the Master](docs/direct-controller.md) to access the API and other control plane services
+3. [Probing the Controller](docs/direct-controller.md) to access the API and other control plane services
 4. [Probing the Worker](docs/direct-worker.md) to access the Kubelet and other worker services
 
 #### Level 1 Hardening

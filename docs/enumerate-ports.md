@@ -26,7 +26,7 @@ sshd      1137   root    4u  IPv6  15660      0t0  TCP *:ssh (LISTEN)
 - `2379/tcp` - [Etcd server service](https://github.com/coreos/etcd#etcd-tcp-ports)
 - `2380/tcp` - [Etcd peer discovery service](https://github.com/coreos/etcd#etcd-tcp-ports)
 
-## Master
+## Controller
 
 SSH into the `controller` instance
 ```

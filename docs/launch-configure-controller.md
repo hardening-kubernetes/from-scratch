@@ -262,7 +262,7 @@ $ ROUTETABLE_ID=$(aws ec2 describe-route-tables \
 
 Obtain the ```controller``` ENI ID
 ```
-$ MASTERENI_ID=$(aws ec2 describe-instances \
+$ CONTROLLERENI_ID=$(aws ec2 describe-instances \
   --region ${AWS_DEFAULT_REGION} \
   --filter 'Name=tag:Name,Values=controller' \
   --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' \
@@ -274,7 +274,7 @@ Add the ```controller``` Pod CIDR Route to the Route Table
 $ aws ec2 create-route \
   --region ${AWS_DEFAULT_REGION} \
   --route-table-id ${ROUTETABLE_ID} \
-  --network-interface-id ${MASTERENI_ID} \
+  --network-interface-id ${CONTROLLERENI_ID} \
   --destination-cidr-block '10.2.0.0/24' \
   --output text
 ```

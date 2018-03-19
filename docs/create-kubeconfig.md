@@ -3,7 +3,7 @@
 
 From the same installation system shell, obtain the controller system IP
 ```
-$ MASTER_IP=$(aws ec2 describe-instances \
+$ CONTROLLER_IP=$(aws ec2 describe-instances \
   --region ${AWS_DEFAULT_REGION} \
   --filter 'Name=tag:Name,Values=controller' \
   --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
@@ -16,7 +16,7 @@ $ cat > kubeconfig <<EOF
 apiVersion: v1
 clusters:
 - cluster:
-    server: http://${MASTER_IP}:8080
+    server: http://${CONTROLLER_IP}:8080
   name: default
 contexts:
 - context:
