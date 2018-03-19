@@ -100,5 +100,6 @@ $ ETCDCTL_API=3 ./etcdctl --endpoints "http://$ETCDIP:2379" version
 etcdctl version: 3.3.2
 API version: 3.3
 ```
+The `etcd` discovery service should not be exposed to any systems but the `etcd` servers.
 
 [Back](/README.md) | [Next](direct-controller.md)
