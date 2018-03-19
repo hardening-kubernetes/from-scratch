@@ -58,7 +58,7 @@ These steps will guide you through creating the VPC, subnet, instances, and basi
 
 1. [Create the VPC](docs/create-vpc.md)
 2. [Launch and configure the `etcd` instance](docs/launch-configure-etcd.md)
-3. [Launch and configure the `master` instance](docs/launch-configure-master.md)
+3. [Launch and configure the `controller` instance](docs/launch-configure-controller.md)
 4. [Launch and configure the `worker-1` and `worker-2` instance](docs/launch-configure-workers.md)
 5. [Create the local `kubeconfig` file](docs/create-kubeconfig.md)
 
@@ -76,8 +76,8 @@ At this most basic level, "Level 0", the current configuration offers very littl
 
 1. [Enumerate exposed ports](docs/enumerate-ports.md) on the nodes and identify their corresponding services
 2. [Probing Etcd](docs/direct-etcd.md) to compromise the data store
-3. [Probing the Master](docs/direct-master.md)
-4. [Probing the Worker](docs/direct-worker.md)
+3. [Probing the Master](docs/direct-controller.md) to access the API and other control plane services
+4. [Probing the Worker](docs/direct-worker.md) to access the Kubelet and other worker services
 
 #### Level 1 Hardening
 
@@ -108,7 +108,7 @@ In order to provide the proper boundaries around workloads and their resources, 
 1. Separate workloads using Namespaces
 2. Set specific Request/Limits on Pods
 3. Enforce Namespace Resource Quotas
-5. Discuss multi-etcd, multi-master
+5. Discuss multi-etcd, multi-controller
 
 #### Level 2 Attacks
 1. Malicious Image, Compromised Container, Multi-tenant Misuse

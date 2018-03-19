@@ -22,22 +22,22 @@ sshd      1137   root    3u  IPv4  15652      0t0  TCP *:ssh (LISTEN)
 sshd      1137   root    4u  IPv6  15660      0t0  TCP *:ssh (LISTEN)
 ```
 #### Services
-- `22/tcp` - SSH
+- `22/tcp` - [SSH](https://openssh.org)
 - `2379/tcp` - [Etcd server service](https://github.com/coreos/etcd#etcd-tcp-ports)
 - `2380/tcp` - [Etcd peer discovery service](https://github.com/coreos/etcd#etcd-tcp-ports)
 
 ## Master
 
-SSH into the `master` instance
+SSH into the `controller` instance
 ```
 $ ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
   --region ${AWS_DEFAULT_REGION} \
-  --filter 'Name=tag:Name,Values=master' \
+  --filter 'Name=tag:Name,Values=controller' \
   --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
   --output text)
 ```
 
-On the `master` system, list the services and processes running:
+On the `controller` system, list the services and processes running:
 ```
 $ sudo lsof -i -nP | grep LIST
 kube-prox  1237   root    6u  IPv6  16597      0t0  TCP *:10256 (LISTEN)
@@ -57,8 +57,8 @@ kube-sche  1303   root    3u  IPv6  16637      0t0  TCP *:10251 (LISTEN)
 #### Services
 - `22/tcp` - [SSH](https://openssh.org)
 - `4194/tcp` - [Kubelet cAdvisor endpoint](https://github.com/google/cadvisor)
-- `6443/tcp` - [Kubernetes API Server](https://kubernetes.io/docs/reference/generated/kube-apiserver/)
-- `8080/tcp` - [Kubernetes API Server](https://kubernetes.io/docs/reference/generated/kube-apiserver/)
+- `6443/tcp` - [Kubernetes API Server "Secure" Port](https://kubernetes.io/docs/reference/generated/kube-apiserver/)
+- `8080/tcp` - [Kubernetes API Server "Insecure" Port](https://kubernetes.io/docs/reference/generated/kube-apiserver/)
 - `10248/tcp` - [Kubelet Healthz Endpoint](https://kubernetes.io/docs/reference/generated/kubelet/)
 - `10249/tcp` - [Kube-Proxy Metrics](https://kubernetes.io/docs/reference/generated/kube-proxy/)
 - `10250/tcp` - [Kubelet Read/Write API](https://kubernetes.io/docs/reference/generated/kubelet)

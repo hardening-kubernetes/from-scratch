@@ -1,4 +1,4 @@
-# Access Etcd Directly
+# Probing Etcd Directly
 
 ## Curl
 
@@ -14,4 +14,4 @@ From i
 $ 
 ```
 
-[Back](/README.md) | [Next](direct-master.md)
+[Back](/README.md) | [Next](direct-controller.md)

@@ -1,11 +1,11 @@
 # Create the local ```kubeconfig``` file
 
 
-From the same installation system shell, obtain the master system IP
+From the same installation system shell, obtain the controller system IP
 ```
 $ MASTER_IP=$(aws ec2 describe-instances \
   --region ${AWS_DEFAULT_REGION} \
-  --filter 'Name=tag:Name,Values=master' \
+  --filter 'Name=tag:Name,Values=controller' \
   --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
   --output text)
 ```

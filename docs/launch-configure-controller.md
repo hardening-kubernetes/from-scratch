@@ -1,7 +1,7 @@
-# Launch and Configure the ```master``` Instance
+# Launch and Configure the ```controller``` Instance
 
 ## Instance Creation
-From the same shell on the installation system, create the ```master``` instance
+From the same shell on the installation system, create the ```controller``` instance
 ```
 $ aws ec2 run-instances \
   --region ${AWS_DEFAULT_REGION} \
@@ -12,7 +12,7 @@ $ aws ec2 run-instances \
   --subnet-id ${SUBNET_ID} \
   --associate-public-ip-address \
   --query 'Instances[0].InstanceId' \
-  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=master}]' \
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=controller}]' \
   --private-ip-address 10.1.0.10 \
   --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}' \
   --output text
@@ -25,18 +25,18 @@ $ aws ec2 modify-instance-attribute \
   --no-source-dest-check \
   --instance-id "$(aws ec2 describe-instances \
   --region ${AWS_DEFAULT_REGION} \
-  --filter 'Name=tag:Name,Values=master' \
+  --filter 'Name=tag:Name,Values=controller' \
   --query 'Reservations[].Instances[].InstanceId' \
   --output text)"
 ```
 
 ## Installation and Configuration
 
-SSH Into the ```master``` Instance
+SSH Into the ```controller``` Instance
 ```
 $ ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
   --region ${AWS_DEFAULT_REGION} \
-  --filter 'Name=tag:Name,Values=master' \
+  --filter 'Name=tag:Name,Values=controller' \
   --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
   --output text)
 ```
@@ -247,7 +247,7 @@ $ sudo systemctl enable kube-apiserver kube-controller-manager kube-scheduler ku
 $ sudo systemctl restart kube-apiserver kube-controller-manager kube-scheduler kubelet kube-proxy
 ```
 
-Exit the ```master``` instance SSH session to return to the installation system shell.
+Exit the ```controller``` instance SSH session to return to the installation system shell.
 
 ## Routing the Pod CIDR for ```kubenet```
 
@@ -260,16 +260,16 @@ $ ROUTETABLE_ID=$(aws ec2 describe-route-tables \
   --output text)
 ```
 
-Obtain the ```master``` ENI ID
+Obtain the ```controller``` ENI ID
 ```
 $ MASTERENI_ID=$(aws ec2 describe-instances \
   --region ${AWS_DEFAULT_REGION} \
-  --filter 'Name=tag:Name,Values=master' \
+  --filter 'Name=tag:Name,Values=controller' \
   --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' \
   --output text)
 ```
 
-Add the ```master``` Pod CIDR Route to the Route Table
+Add the ```controller``` Pod CIDR Route to the Route Table
 ```
 $ aws ec2 create-route \
   --region ${AWS_DEFAULT_REGION} \
@@ -281,11 +281,11 @@ $ aws ec2 create-route \
 
 ## Validation
 
-SSH Into the ```master``` Instance
+SSH Into the ```controller``` Instance
 ```
 $ ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
   --region ${AWS_DEFAULT_REGION} \
-  --filter 'Name=tag:Name,Values=master' \
+  --filter 'Name=tag:Name,Values=controller' \
   --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
   --output text)
 ```
@@ -303,6 +303,6 @@ scheduler            Healthy   ok
 etcd-0               Healthy   {"health": "true"}
 ```
 
-Exit the ```master``` instance SSH session to return to the installation system shell.
+Exit the ```controller``` instance SSH session to return to the installation system shell.
 
 [Back](/README.md) | [Next](launch-configure-workers.md)

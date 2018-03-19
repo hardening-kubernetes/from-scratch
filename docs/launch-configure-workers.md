@@ -413,11 +413,11 @@ $ aws ec2 create-route \
 
 ## Validation
 
-SSH into the master instance
+SSH into the controller instance
 ```
 $ ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
   --region ${AWS_DEFAULT_REGION} \
-  --filter 'Name=tag:Name,Values=master' \
+  --filter 'Name=tag:Name,Values=controller' \
   --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
   --output text)
 ```

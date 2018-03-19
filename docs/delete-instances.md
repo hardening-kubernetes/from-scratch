@@ -32,13 +32,13 @@ $ aws ec2 terminate-instances \
   --instance-ids ${INSTANCE2_ID}
 ```
 
-## ```master``` Deletion
+## ```controller``` Deletion
 
-Obtain the ```master``` Instance ID and Terminate
+Obtain the ```controller``` Instance ID and Terminate
 ```
 $ INSTANCEM_ID="$(aws ec2 describe-instances \
   --region ${AWS_DEFAULT_REGION} \
-  --filter 'Name=tag:Name,Values=master' \
+  --filter 'Name=tag:Name,Values=controller' \
   --query 'Reservations[].Instances[].InstanceId' \
   --output text)"
 $ aws ec2 terminate-instances \

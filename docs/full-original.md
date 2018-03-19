@@ -54,7 +54,7 @@ aws ec2 run-instances --region ${AWS_DEFAULT_REGION} --image-id ${IMAGE_ID} --co
 #### Master
 
 ```
-aws ec2 run-instances --region ${AWS_DEFAULT_REGION} --image-id ${IMAGE_ID} --count 1 --instance-type t2.small --key-name ${KEY_NAME} --subnet-id ${SUBNET_ID} --associate-public-ip-address --query 'Instances[0].InstanceId' --output text --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=master}]' --private-ip-address 10.1.0.10 --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}'
+aws ec2 run-instances --region ${AWS_DEFAULT_REGION} --image-id ${IMAGE_ID} --count 1 --instance-type t2.small --key-name ${KEY_NAME} --subnet-id ${SUBNET_ID} --associate-public-ip-address --query 'Instances[0].InstanceId' --output text --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=controller}]' --private-ip-address 10.1.0.10 --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}'
 ```
 
 #### Worker-1 and Worker-2
@@ -75,13 +75,13 @@ aws ec2 run-instances --region ${AWS_DEFAULT_REGION} --image-id ${IMAGE_ID} --co
 ROUTETABLE_ID=$(aws ec2 describe-route-tables --region ${AWS_DEFAULT_REGION} --filter "Name=tag:Name,Values=${STACK_NAME}-rt" --query 'RouteTables[*].RouteTableId' --output text)
 ```
 
-#### Obtain the ```master``` ENI ID
+#### Obtain the ```controller``` ENI ID
 
 ```
-MASTERENI_ID=$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' --output text)
+MASTERENI_ID=$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=controller' --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' --output text)
 ```
 
-#### Add the ```master``` Pod CIDR Route to the Route Table
+#### Add the ```controller``` Pod CIDR Route to the Route Table
 
 ```
 aws ec2 create-route --region ${AWS_DEFAULT_REGION} --route-table-id ${ROUTETABLE_ID} --network-interface-id ${MASTERENI_ID} --destination-cidr-block '10.2.0.0/24' --output text
@@ -171,18 +171,18 @@ ETCDCTL_API=3 etcdctl member list
 b8ae04a310fbeaf8, started, ip-10-10-10-5, http://10.1.0.5:2380, http://10.1.0.5:2379
 ```
 
-### Configure the ```master``` Instance
+### Configure the ```controller``` Instance
 
 #### Disable Source/Destination Checking for ```kube-proxy```
 
 ```
-aws ec2 modify-instance-attribute --region ${AWS_DEFAULT_REGION} --no-source-dest-check --instance-id "$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].InstanceId' --output text)"
+aws ec2 modify-instance-attribute --region ${AWS_DEFAULT_REGION} --no-source-dest-check --instance-id "$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=controller' --query 'Reservations[].Instances[].InstanceId' --output text)"
 ```
 
-#### SSH Into the ```master``` Instance
+#### SSH Into the ```controller``` Instance
 
 ```
-ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
+ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=controller' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
 ```
 
 #### Install Docker and Other Necessary Binaries
@@ -691,10 +691,10 @@ sudo systemctl enable kubelet kube-proxy
 sudo systemctl restart kubelet kube-proxy
 ```
 
-## Verify via ```kubectl``` on the ```master```
+## Verify via ```kubectl``` on the ```controller```
 
 ```
-ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
+ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=controller' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
 ```
 
 #### Ensure the Nodes have Joined
@@ -820,7 +820,7 @@ spec:
             path: /readiness
             port: 8081
             scheme: HTTP
-          # we poll on pod startup for the Kubernetes master service and
+          # we poll on pod startup for the Kubernetes controller service and
           # only setup the /readiness HTTP server once that's available.
           initialDelaySeconds: 3
           timeoutSeconds: 5
@@ -923,9 +923,9 @@ kubectl create -f kube-dns.yml
 # Using the Cluster
 
 ## Deploying a Sample Application
-#### Obtain the ```master``` External IP
+#### Obtain the ```controller``` External IP
 ```
-API_IP=$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
+API_IP=$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=controller' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
 ```
 
 #### Create a Local ```kubeconfig``` File
@@ -1003,11 +1003,11 @@ aws ec2 terminate-instances --region ${AWS_DEFAULT_REGION} --instance-ids ${INST
 aws ec2 terminate-instances --region ${AWS_DEFAULT_REGION} --instance-ids ${INSTANCE2_ID}
 ```
 
-### ```master``` Deletion
+### ```controller``` Deletion
 
-#### Obtain the ```master``` Instance ID and Terminate
+#### Obtain the ```controller``` Instance ID and Terminate
 ```
-INSTANCEM_ID="$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].InstanceId' --output text)"
+INSTANCEM_ID="$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=controller' --query 'Reservations[].Instances[].InstanceId' --output text)"
 aws ec2 terminate-instances --region ${AWS_DEFAULT_REGION} --instance-ids ${INSTANCEM_ID}
 ```
 
