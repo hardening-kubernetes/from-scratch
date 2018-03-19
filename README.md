@@ -57,10 +57,10 @@ To keep things simple, this guide is based on a single VPC, single availability 
 These steps will guide you through creating the VPC, subnet, instances, and basic cluster configuration without any hardening measures in place.  Pay special attention to the configuration of the security group to ensure only you have access to these systems!
 
 1. [Create the VPC](docs/create-vpc.md)
-2. [Launch and configure the ```etcd``` instance](docs/launch-configure-etcd.md)
-3. [Launch and configure the ```master``` instance](docs/launch-configure-master.md)
-4. [Launch and configure the ```worker-1``` and ```worker-2``` instance](docs/launch-configure-workers.md)
-5. [Create the local ```kubeconfig``` file](docs/create-kubeconfig.md)
+2. [Launch and configure the `etcd` instance](docs/launch-configure-etcd.md)
+3. [Launch and configure the `master` instance](docs/launch-configure-master.md)
+4. [Launch and configure the `worker-1` and `worker-2` instance](docs/launch-configure-workers.md)
+5. [Create the local `kubeconfig` file](docs/create-kubeconfig.md)
 
 #### Level 0 Security
 
@@ -74,10 +74,11 @@ The following items are to be deployed to fulfill basic Kubernetes cluster funct
 
 At this most basic level, "Level 0", the current configuration offers very little (if any) protection from attacks that can take complete control of the the cluster and its nodes.
 
-1. Enumerate exposed ports on the nodes and identify their corresponding services
-2. Directly access Etcd to compromise the data store
-3. Directly access the Kubernetes API
-4. Directly access the Kubelet APIs
+1. [Enumerate exposed ports](docs/enumerate-ports.md) on the nodes and identify their corresponding services
+2. [Directly access Etcd](docs/direct-etcdctl.md) to compromise the data store
+3. [Directly access the Kubernetes API](docs/direct-api.md)
+4. [Directly access the Kubelet APIs](docs/direct-worker.md)
+5. [Directly access the Metrics APIs](docs/direct-metrics.md)
 
 #### Level 1 Hardening
 
