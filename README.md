@@ -75,10 +75,9 @@ The following items are to be deployed to fulfill basic Kubernetes cluster funct
 At this most basic level, "Level 0", the current configuration offers very little (if any) protection from attacks that can take complete control of the the cluster and its nodes.
 
 1. [Enumerate exposed ports](docs/enumerate-ports.md) on the nodes and identify their corresponding services
-2. [Directly access Etcd](docs/direct-etcdctl.md) to compromise the data store
-3. [Directly access the Kubernetes API](docs/direct-api.md)
-4. [Directly access the Kubelet APIs](docs/direct-worker.md)
-5. [Directly access the Metrics APIs](docs/direct-metrics.md)
+2. [Probing Etcd](docs/direct-etcd.md) to compromise the data store
+3. [Probing the Master](docs/direct-master.md)
+4. [Probing the Worker](docs/direct-worker.md)
 
 #### Level 1 Hardening
 
