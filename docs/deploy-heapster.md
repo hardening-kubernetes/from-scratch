@@ -3,7 +3,7 @@
 From the same installation system shell, create the ```kube-dns.yml``` Definition
 
 ```
-cat > heapster.yml <<EOF
+$ cat > heapster.yml <<EOF
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -46,12 +46,12 @@ EOF
 
 ## Deployment
 ```
-kubectl create -f heapster.yml
+$ kubectl create -f heapster.yml
 ```
 
 ## Validation
 ```
-kubectl get pods --all-namespaces
+$ kubectl get pods --all-namespaces
 NAMESPACE     NAME                        READY     STATUS    RESTARTS   AGE
 kube-system   heapster-d7c4b86d4-mdsps    1/1       Running   0          1m
 kube-system   kube-dns-68886d5985-sht75   3/3       Running   0          2m

@@ -3,7 +3,7 @@
 ## Instance Creation
 From the same shell on the installation system, create the ```master``` instance
 ```
-aws ec2 run-instances \
+$ aws ec2 run-instances \
   --region ${AWS_DEFAULT_REGION} \
   --image-id ${IMAGE_ID} \
   --count 1 \
@@ -20,7 +20,7 @@ aws ec2 run-instances \
 
 Disable Source/Destination Checking for ```kube-proxy```
 ```
-aws ec2 modify-instance-attribute \
+$ aws ec2 modify-instance-attribute \
   --region ${AWS_DEFAULT_REGION} \
   --no-source-dest-check \
   --instance-id "$(aws ec2 describe-instances \
@@ -34,7 +34,7 @@ aws ec2 modify-instance-attribute \
 
 SSH Into the ```master``` Instance
 ```
-ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
+$ ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
   --region ${AWS_DEFAULT_REGION} \
   --filter 'Name=tag:Name,Values=master' \
   --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
@@ -43,34 +43,34 @@ ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
 
 Install Docker and Other Necessary Binaries
 ```
-sudo apt-get update
-sudo apt-get install docker.io socat conntrack --yes
+$ sudo apt-get update
+$ sudo apt-get install docker.io socat conntrack --yes
 ```
 
 Configure and Start Docker
 ```
-echo "DOCKER_OPTS=--ip-masq=false --iptables=false \
+$ echo "DOCKER_OPTS=--ip-masq=false --iptables=false \
 --log-driver=json-file --log-level=warn --log-opt=max-file=5 \
 --log-opt=max-size=10m \
 --storage-driver=overlay" | sudo tee -a /etc/default/docker
-sudo systemctl daemon-reload
-sudo systemctl restart docker.service
+$ sudo systemctl daemon-reload
+$ sudo systemctl restart docker.service
 ```
 
 Verify Docker is Running
 ```
-sudo docker ps
+$ sudo docker ps
 ```
 
 Enable Forwarding for ```kube-proxy``` Functions
 ```
-sudo iptables -P FORWARD ACCEPT
+$ sudo iptables -P FORWARD ACCEPT
 ```
 
 Download the Kubernetes Binaries
 ```
-export K8S_RELEASE="1.9.2"
-wget -q --show-progress --https-only --timestamping \
+$ export K8S_RELEASE="1.9.2"
+$ wget -q --show-progress --https-only --timestamping \
   "https://storage.googleapis.com/kubernetes-release/release/v${K8S_RELEASE}/bin/linux/amd64/kube-apiserver" \
   "https://storage.googleapis.com/kubernetes-release/release/v${K8S_RELEASE}/bin/linux/amd64/kube-controller-manager" \
   "https://storage.googleapis.com/kubernetes-release/release/v${K8S_RELEASE}/bin/linux/amd64/kube-scheduler" \
@@ -81,14 +81,14 @@ wget -q --show-progress --https-only --timestamping \
 
 Make the Kubernetes Binaries Executable and Place them in the PATH
 ```
-chmod +x kube-apiserver kube-controller-manager kube-scheduler kubectl kubelet kube-proxy
-sudo mv kube-apiserver kube-controller-manager kube-scheduler \
+$ chmod +x kube-apiserver kube-controller-manager kube-scheduler kubectl kubelet kube-proxy
+$ sudo mv kube-apiserver kube-controller-manager kube-scheduler \
   kubectl kubelet kube-proxy /usr/local/bin/
 ```
 
 Create Supporting Directories
 ```
-sudo mkdir -p \
+$ sudo mkdir -p \
   /etc/cni/net.d \
   /opt/cni/bin \
   /var/lib/kubelet \
@@ -99,18 +99,18 @@ sudo mkdir -p \
 
 Download the CNI Plugins for ```kubenet```
 ```
-wget -q --show-progress --https-only --timestamping \
+$ wget -q --show-progress --https-only --timestamping \
   "https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz"
 ```
 
 Install the CNI Plugins
 ```
-sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
+$ sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
 ```
 
 Configure the ```kube-apiserver``` Systemd Unit
 ```
-cat > kube-apiserver.service <<EOF
+$ cat > kube-apiserver.service <<EOF
 [Unit]
 Description=Kubernetes API Server
 Documentation=https://github.com/kubernetes/kubernetes
@@ -136,7 +136,7 @@ EOF
 
 Configure the ```kube-controller-manager``` Systemd Unit
 ```
-cat > kube-controller-manager.service <<EOF
+$ cat > kube-controller-manager.service <<EOF
 [Unit]
 Description=Kubernetes Controller Manager
 Documentation=https://github.com/kubernetes/kubernetes
@@ -156,7 +156,7 @@ EOF
 
 Configure the ```kube-scheduler``` Systemd Unit
 ```
-cat > kube-scheduler.service <<EOF
+$ cat > kube-scheduler.service <<EOF
 [Unit]
 Description=Kubernetes Scheduler
 Documentation=https://github.com/kubernetes/kubernetes
@@ -173,7 +173,7 @@ EOF
 
 Configure the ```kubelet``` Systemd Unit
 ```
-cat > kubelet.service <<EOF
+$ cat > kubelet.service <<EOF
 [Unit]
 Description=Kubernetes Kubelet
 Documentation=https://github.com/kubernetes/kubernetes
@@ -198,7 +198,7 @@ EOF
 
 Create the ```kubelet``` ```kubeconfig``` File
 ```
-cat > kubeconfig <<EOF
+$ cat > kubeconfig <<EOF
 apiVersion: v1
 clusters:
 - cluster:
@@ -221,7 +221,7 @@ EOF
 
 Configure the ```kube-proxy``` Systemd Unit
 ```
-cat > kube-proxy.service <<EOF
+$ cat > kube-proxy.service <<EOF
 [Unit]
 Description=Kubernetes Kube Proxy
 Documentation=https://github.com/kubernetes/kubernetes
@@ -239,12 +239,12 @@ EOF
 
 Place the Systemd Units and Start All Services
 ```
-sudo mv kubeconfig /var/lib/kubelet/kubeconfig
-sudo mv kube-apiserver.service kube-scheduler.service kube-controller-manager.service \
+$ sudo mv kubeconfig /var/lib/kubelet/kubeconfig
+$ sudo mv kube-apiserver.service kube-scheduler.service kube-controller-manager.service \
   kubelet.service kube-proxy.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable kube-apiserver kube-controller-manager kube-scheduler kubelet kube-proxy
-sudo systemctl restart kube-apiserver kube-controller-manager kube-scheduler kubelet kube-proxy
+$ sudo systemctl daemon-reload
+$ sudo systemctl enable kube-apiserver kube-controller-manager kube-scheduler kubelet kube-proxy
+$ sudo systemctl restart kube-apiserver kube-controller-manager kube-scheduler kubelet kube-proxy
 ```
 
 Exit the ```master``` instance SSH session to return to the installation system shell.
@@ -252,8 +252,8 @@ Exit the ```master``` instance SSH session to return to the installation system 
 ## Routing the Pod CIDR for ```kubenet```
 
 Obtain the Route Table ID
-```sh
-ROUTETABLE_ID=$(aws ec2 describe-route-tables \
+```
+$ ROUTETABLE_ID=$(aws ec2 describe-route-tables \
   --region ${AWS_DEFAULT_REGION} \
   --filter "Name=tag:Name,Values=${STACK_NAME}-rt" \
   --query 'RouteTables[*].RouteTableId' \
@@ -262,7 +262,7 @@ ROUTETABLE_ID=$(aws ec2 describe-route-tables \
 
 Obtain the ```master``` ENI ID
 ```
-MASTERENI_ID=$(aws ec2 describe-instances \
+$ MASTERENI_ID=$(aws ec2 describe-instances \
   --region ${AWS_DEFAULT_REGION} \
   --filter 'Name=tag:Name,Values=master' \
   --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' \
@@ -271,7 +271,7 @@ MASTERENI_ID=$(aws ec2 describe-instances \
 
 Add the ```master``` Pod CIDR Route to the Route Table
 ```
-aws ec2 create-route \
+$ aws ec2 create-route \
   --region ${AWS_DEFAULT_REGION} \
   --route-table-id ${ROUTETABLE_ID} \
   --network-interface-id ${MASTERENI_ID} \
@@ -283,7 +283,7 @@ aws ec2 create-route \
 
 SSH Into the ```master``` Instance
 ```
-ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
+$ ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
   --region ${AWS_DEFAULT_REGION} \
   --filter 'Name=tag:Name,Values=master' \
   --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
@@ -292,7 +292,7 @@ ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances \
 
 Verify that the cluster control plane components are running and healthy.
 ```
-kubectl get componentstatuses
+$ kubectl get componentstatuses
 ```
 
 Example of healthy output:

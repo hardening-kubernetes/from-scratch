@@ -3,7 +3,7 @@
 From the same installation system shell, create the ```kube-dns.yml``` Definition
 
 ```
-cat > kube-dns.yml <<EOF
+$ cat > kube-dns.yml <<EOF
 # Copyright 2016 The Kubernetes Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -206,7 +206,7 @@ EOF
 
 ## Deployment
 ```
-kubectl create -f kube-dns.yml
+$ kubectl create -f kube-dns.yml
 service "kube-dns" created
 configmap "kube-dns" created
 deployment "kube-dns" created
@@ -214,7 +214,7 @@ deployment "kube-dns" created
 
 ## Validation
 ```
-kubectl get pods --all-namespaces
+$ kubectl get pods --all-namespaces
 NAMESPACE     NAME                        READY     STATUS    RESTARTS   AGE
 kube-system   kube-dns-68886d5985-sht75   3/3       Running   0          1m
 ```

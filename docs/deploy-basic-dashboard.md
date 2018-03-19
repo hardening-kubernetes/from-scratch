@@ -3,7 +3,7 @@
 From the same installation system shell, create the ```basic-dashboard.yml``` Definition
 
 ```
-cat > basic-dashboard.yml <<EOF
+$ cat > basic-dashboard.yml <<EOF
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
@@ -78,12 +78,12 @@ EOF
 
 ## Deployment
 ```
-kubectl create -f basic-dashboard.yml
+$ kubectl create -f basic-dashboard.yml
 ```
 
 ## Validation
 ```
-kubectl get pods --all-namespaces
+$ kubectl get pods --all-namespaces
 NAMESPACE     NAME                                   READY     STATUS    RESTARTS   AGE
 kube-system   heapster-555f7f75b6-vcz4p              1/1       Running   0          5m
 kube-system   kube-dns-68886d5985-sht75              3/3       Running   0          7m

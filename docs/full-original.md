@@ -5,7 +5,7 @@
 
 #### Deploy the Cloudformation Template
 
-```shell
+```
 export STACK_NAME="hkfs"
 export AWS_DEFAULT_REGION="us-east-1"
 export KEY_NAME="hkfs"
@@ -17,7 +17,7 @@ aws cloudformation create-stack --region ${AWS_DEFAULT_REGION} --stack-name ${ST
 
 #### Obtain the Necessary Variables
 
-```shell
+```
 VPC_ID="$(aws cloudformation describe-stacks --region ${AWS_DEFAULT_REGION} --query 'Stacks[*].Outputs[?OutputKey==`VPCId`].OutputValue[]' --stack-name ${STACK_NAME} --output text)"
 echo "${VPC_ID}"
 SG_ID="$(aws ec2 describe-security-groups --query 'SecurityGroups[*].GroupId' --region ${AWS_DEFAULT_REGION} --filter "Name=vpc-id,Values=${VPC_ID}" --output text)"
@@ -28,7 +28,7 @@ echo "${SUBNET_ID}"
 
 #### Allow Just our IPs to Reach these Instances on all Ports
 
-```shell
+```
 aws ec2 authorize-security-group-ingress --region ${AWS_DEFAULT_REGION} --group-id ${SG_ID} --protocol all --port 0 --cidr $(dig +short myip.opendns.com @resolver1.opendns.com)/32
 ```
 
@@ -38,7 +38,7 @@ aws ec2 authorize-security-group-ingress --region ${AWS_DEFAULT_REGION} --group-
 
 #### Create an SSH Keypair
 
-```shell
+```
 aws ec2 create-key-pair --region ${AWS_DEFAULT_REGION} --key-name ${KEY_NAME} --query 'KeyMaterial' --output text > ${KEY_NAME}.pem
 chmod 600 ${KEY_NAME}.pem
 ```
@@ -47,19 +47,19 @@ chmod 600 ${KEY_NAME}.pem
 
 #### Etcd
 
-```shell
+```
 aws ec2 run-instances --region ${AWS_DEFAULT_REGION} --image-id ${IMAGE_ID} --count 1 --instance-type t2.micro --key-name ${KEY_NAME} --subnet-id ${SUBNET_ID} --associate-public-ip-address --query 'Instances[0].InstanceId' --output text --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=etcd}]' --private-ip-address 10.1.0.5 --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}'
 ```
 
 #### Master
 
-```shell
+```
 aws ec2 run-instances --region ${AWS_DEFAULT_REGION} --image-id ${IMAGE_ID} --count 1 --instance-type t2.small --key-name ${KEY_NAME} --subnet-id ${SUBNET_ID} --associate-public-ip-address --query 'Instances[0].InstanceId' --output text --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=master}]' --private-ip-address 10.1.0.10 --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}'
 ```
 
 #### Worker-1 and Worker-2
 
-```shell
+```
 aws ec2 run-instances --region ${AWS_DEFAULT_REGION} --image-id ${IMAGE_ID} --count 1 --instance-type t2.small --key-name ${KEY_NAME} --subnet-id ${SUBNET_ID} --associate-public-ip-address --query 'Instances[0].InstanceId' --output text --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=worker-1}]' --private-ip-address 10.1.0.11 --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}'
 
 aws ec2 run-instances --region ${AWS_DEFAULT_REGION} --image-id ${IMAGE_ID} --count 1 --instance-type t2.small --key-name ${KEY_NAME} --subnet-id ${SUBNET_ID} --associate-public-ip-address --query 'Instances[0].InstanceId' --output text --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=worker-2}]' --private-ip-address 10.1.0.12 --block-device-mapping 'DeviceName=/dev/sda1,Ebs={VolumeSize=32}'
@@ -71,43 +71,43 @@ aws ec2 run-instances --region ${AWS_DEFAULT_REGION} --image-id ${IMAGE_ID} --co
 
 #### Obtain the Route Table ID
 
-```shell
+```
 ROUTETABLE_ID=$(aws ec2 describe-route-tables --region ${AWS_DEFAULT_REGION} --filter "Name=tag:Name,Values=${STACK_NAME}-rt" --query 'RouteTables[*].RouteTableId' --output text)
 ```
 
 #### Obtain the ```master``` ENI ID
 
-```shell
+```
 MASTERENI_ID=$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' --output text)
 ```
 
 #### Add the ```master``` Pod CIDR Route to the Route Table
 
-```shell
+```
 aws ec2 create-route --region ${AWS_DEFAULT_REGION} --route-table-id ${ROUTETABLE_ID} --network-interface-id ${MASTERENI_ID} --destination-cidr-block '10.2.0.0/24' --output text
 ```
 
 #### Obtain the ```worker-1``` ENI ID
 
-```shell
+```
 WORKER1ENI_ID=$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=worker-1' --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' --output text)
 ```
 
 #### Add the ```worker-1``` Pod CIDR Route to the Route Table
 
-```shell
+```
 aws ec2 create-route --region ${AWS_DEFAULT_REGION} --route-table-id ${ROUTETABLE_ID} --network-interface-id ${WORKER1ENI_ID} --destination-cidr-block '10.2.1.0/24' --output text
 ```
 
 #### Obtain the ```worker-2``` ENI ID
 
-```shell
+```
 WORKER2ENI_ID=$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=worker-2' --query 'Reservations[].Instances[].NetworkInterfaces[0].NetworkInterfaceId' --output text)
 ```
 
 #### Add the ```worker-2``` Pod CIDR Route to the Route Table
 
-```shell
+```
 aws ec2 create-route --region ${AWS_DEFAULT_REGION} --route-table-id ${ROUTETABLE_ID} --network-interface-id ${WORKER2ENI_ID} --destination-cidr-block '10.2.2.0/24' --output text
 ```
 
@@ -116,25 +116,25 @@ aws ec2 create-route --region ${AWS_DEFAULT_REGION} --route-table-id ${ROUTETABL
 ### Configure the Etcd Instance
 
 #### SSH Into the Etcd Instance
-```shell
+```
 ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=etcd' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
 ```
 
 #### Download the Etcd Binary
-```shell
+```
 wget -q --show-progress --https-only --timestamping \
   "https://github.com/coreos/etcd/releases/download/v3.2.11/etcd-v3.2.11-linux-amd64.tar.gz"
 ```
 
 #### Extract the Etcd Binary and Create Needed Folders
-```shell
+```
 tar -xvf etcd-v3.2.11-linux-amd64.tar.gz
 sudo mv etcd-v3.2.11-linux-amd64/etcd* /usr/local/bin/
 sudo mkdir -p /etc/etcd /var/lib/etcd
 ```
 
 #### Create the ```etcd.service``` Systemd Unit
-```shell
+```
 cat > etcd.service <<EOF
 [Unit]
 Description=etcd
@@ -158,7 +158,7 @@ EOF
 ```
 
 #### Enable and Start/Restart Etcd
-```shell
+```
 sudo mv etcd.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable etcd
@@ -166,7 +166,7 @@ sudo systemctl restart etcd
 ```
 
 #### Verify Etcd is Running Properly
-```shell
+```
 ETCDCTL_API=3 etcdctl member list
 b8ae04a310fbeaf8, started, ip-10-10-10-5, http://10.1.0.5:2380, http://10.1.0.5:2379
 ```
@@ -175,41 +175,41 @@ b8ae04a310fbeaf8, started, ip-10-10-10-5, http://10.1.0.5:2380, http://10.1.0.5:
 
 #### Disable Source/Destination Checking for ```kube-proxy```
 
-```shell
+```
 aws ec2 modify-instance-attribute --region ${AWS_DEFAULT_REGION} --no-source-dest-check --instance-id "$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].InstanceId' --output text)"
 ```
 
 #### SSH Into the ```master``` Instance
 
-```shell
+```
 ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
 ```
 
 #### Install Docker and Other Necessary Binaries
-```shell
+```
 sudo apt-get update
 sudo apt-get install docker.io socat conntrack --yes
 ```
 
 #### Configure and Start Docker
-```shell
+```
 echo "DOCKER_OPTS=--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay" | sudo tee -a /etc/default/docker
 sudo systemctl daemon-reload
 sudo systemctl restart docker.service
 ```
 
 #### Verify Docker is Running
-```shell
+```
 sudo docker ps
 ```
 
 #### Enable Forwarding for ```kube-proxy``` Functions
-```shell
+```
 sudo iptables -P FORWARD ACCEPT
 ```
 
 #### Download the Kubernetes Binaries
-```shell
+```
 export K8S_RELEASE="1.9.2"
 wget -q --show-progress --https-only --timestamping \
   "https://storage.googleapis.com/kubernetes-release/release/v${K8S_RELEASE}/bin/linux/amd64/kube-apiserver" \
@@ -221,13 +221,13 @@ wget -q --show-progress --https-only --timestamping \
 ```
 
 #### Make the Kubernetes Binaries Executable and Place them in the PATH
-```shell
+```
 chmod +x kube-apiserver kube-controller-manager kube-scheduler kubectl kubelet kube-proxy
 sudo mv kube-apiserver kube-controller-manager kube-scheduler kubectl kubelet kube-proxy /usr/local/bin/
 ```
 
 #### Create Supporting Directories
-```shell
+```
 sudo mkdir -p \
   /etc/cni/net.d \
   /opt/cni/bin \
@@ -238,18 +238,18 @@ sudo mkdir -p \
 ```
 
 #### Download the CNI Plugins for ```kubenet```
-```shell
+```
 wget -q --show-progress --https-only --timestamping \
   "https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz"
 ```
 
 #### Install the CNI Plugins
-```shell
+```
 sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
 ```
 
 #### Configure the ```kube-apiserver``` Systemd Unit
-```shell
+```
 cat > kube-apiserver.service <<EOF
 [Unit]
 Description=Kubernetes API Server
@@ -275,7 +275,7 @@ EOF
 ```
 
 #### Configure the ```kube-controller-manager``` Systemd Unit
-```shell
+```
 cat > kube-controller-manager.service <<EOF
 [Unit]
 Description=Kubernetes Controller Manager
@@ -295,7 +295,7 @@ EOF
 ```
 
 #### Configure the ```kube-scheduler``` Systemd Unit
-```shell
+```
 cat > kube-scheduler.service <<EOF
 [Unit]
 Description=Kubernetes Scheduler
@@ -312,7 +312,7 @@ EOF
 ```
 
 #### Configure the ```kubelet``` Systemd Unit
-```shell
+```
 cat > kubelet.service <<EOF
 [Unit]
 Description=Kubernetes Kubelet
@@ -337,7 +337,7 @@ EOF
 ```
 
 #### Create the ```kubelet``` ```kubeconfig``` File
-```shell
+```
 cat > kubeconfig <<EOF
 apiVersion: v1
 clusters:
@@ -360,7 +360,7 @@ EOF
 ```
 
 #### Configure the ```kube-proxy``` Systemd Unit
-```shell
+```
 cat > kube-proxy.service <<EOF
 [Unit]
 Description=Kubernetes Kube Proxy
@@ -378,7 +378,7 @@ EOF
 ```
 
 #### Place the Systemd Units and Start All Services
-```shell
+```
 sudo mv kubeconfig /var/lib/kubelet/kubeconfig
 sudo mv kube-apiserver.service kube-scheduler.service kube-controller-manager.service kubelet.service kube-proxy.service /etc/systemd/system/
 sudo systemctl daemon-reload
@@ -387,11 +387,11 @@ sudo systemctl restart kube-apiserver kube-controller-manager kube-scheduler kub
 ```
 
 #### Verify that the Cluster Components are Running and Healthy
-```shell
+```
 kubectl get componentstatuses
 ```
 ##### Example of Healthy Output
-```shell
+```
 NAME                 STATUS    MESSAGE              ERROR
 controller-manager   Healthy   ok                   
 scheduler            Healthy   ok                   
@@ -402,39 +402,39 @@ etcd-0               Healthy   {"health": "true"}
 
 #### Disable Source/Destination Checking for ```kube-proxy```
 
-```shell
+```
 aws ec2 modify-instance-attribute --region ${AWS_DEFAULT_REGION} --no-source-dest-check --instance-id "$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=worker-1' --query 'Reservations[].Instances[].InstanceId' --output text)"
 ```
 
 #### SSH Into the ```worker-1``` Instance
-```shell
+```
 ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=worker-1' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
 ```
 #### Install Docker and Other Necessary Binaries
-```shell
+```
 sudo apt-get update
 sudo apt-get install docker.io socat conntrack --yes
 ```
 
 #### Configure and Start Docker
-```shell
+```
 echo "DOCKER_OPTS=--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay" | sudo tee -a /etc/default/docker
 sudo systemctl daemon-reload
 sudo systemctl restart docker.service
 ```
 
 #### Verify Docker is Running
-```shell
+```
 sudo docker ps
 ```
 
 #### Enable Forwarding for ```kube-proxy``` Functions
-```shell
+```
 sudo iptables -P FORWARD ACCEPT
 ```
 
 #### Create Supporting Directories
-```shell
+```
 sudo mkdir -p \
   /etc/cni/net.d \
   /opt/cni/bin \
@@ -445,18 +445,18 @@ sudo mkdir -p \
 ```
 
 #### Download the CNI Plugins for ```kubenet```
-```shell
+```
 wget -q --show-progress --https-only --timestamping \
   "https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz"
 ```
 
 #### Install the CNI Plugins
-```shell
+```
 sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
 ```
 
 #### Download the Kubernetes Binaries
-```shell
+```
 export K8S_RELEASE="1.9.2"
 wget -q --show-progress --https-only --timestamping \
   "https://storage.googleapis.com/kubernetes-release/release/v${K8S_RELEASE}/bin/linux/amd64/kube-proxy" \
@@ -464,13 +464,13 @@ wget -q --show-progress --https-only --timestamping \
 ```
 
 #### Make the Kubernetes Binaries Executable and Place them in the PATH
-```shell
+```
 chmod +x kube-proxy kubelet
 sudo mv kube-proxy kubelet /usr/local/bin/
 ```
 
 #### Configure the ```kubelet``` Systemd Unit
-```shell
+```
 cat > kubelet.service <<EOF
 [Unit]
 Description=Kubernetes Kubelet
@@ -495,7 +495,7 @@ EOF
 ```
 
 #### Create the ```kubelet``` ```kubeconfig``` File
-```shell
+```
 cat > kubeconfig <<EOF
 apiVersion: v1
 clusters:
@@ -518,7 +518,7 @@ EOF
 ```
 
 #### Configure the ```kube-proxy``` Systemd Unit
-```shell
+```
 cat > kube-proxy.service <<EOF
 [Unit]
 Description=Kubernetes Kube Proxy
@@ -536,7 +536,7 @@ EOF
 ```
 
 #### Place the Systemd Units and Start All Services
-```shell
+```
 sudo mv kubeconfig /var/lib/kubelet/kubeconfig
 sudo mv kubelet.service kube-proxy.service /etc/systemd/system/
 sudo systemctl daemon-reload
@@ -548,40 +548,40 @@ sudo systemctl restart kubelet kube-proxy
 
 #### Disable Source/Destination Checking for ```kube-proxy```
 
-```shell
+```
 aws ec2 modify-instance-attribute --region ${AWS_DEFAULT_REGION} --no-source-dest-check --instance-id "$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=worker-2' --query 'Reservations[].Instances[].InstanceId' --output text)"
 ```
 
 #### SSH Into the ```worker-2``` Instance
-```shell
+```
 ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=worker-2' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
 ```
 
 #### Install Docker and Other Necessary Binaries
-```shell
+```
 sudo apt-get update
 sudo apt-get install docker.io socat conntrack --yes
 ```
 
 #### Configure and Start Docker
-```shell
+```
 echo "DOCKER_OPTS=--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay" | sudo tee -a /etc/default/docker
 sudo systemctl daemon-reload
 sudo systemctl restart docker.service
 ```
 
 #### Verify Docker is Running
-```shell
+```
 sudo docker ps
 ```
 
 #### Enable Forwarding for ```kube-proxy``` Functions
-```shell
+```
 sudo iptables -P FORWARD ACCEPT
 ```
 
 #### Create Supporting Directories
-```shell
+```
 sudo mkdir -p \
   /etc/cni/net.d \
   /opt/cni/bin \
@@ -592,18 +592,18 @@ sudo mkdir -p \
 ```
 
 #### Download the CNI Plugins for ```kubenet```
-```shell
+```
 wget -q --show-progress --https-only --timestamping \
   "https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz"
 ```
 
 #### Install the CNI Plugins
-```shell
+```
 sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
 ```
 
 #### Download the Kubernetes Binaries
-```shell
+```
 export K8S_RELEASE="1.9.2"
 wget -q --show-progress --https-only --timestamping \
   "https://storage.googleapis.com/kubernetes-release/release/v${K8S_RELEASE}/bin/linux/amd64/kube-proxy" \
@@ -611,13 +611,13 @@ wget -q --show-progress --https-only --timestamping \
 ```
 
 #### Make the Kubernetes Binaries Executable and Place them in the PATH
-```shell
+```
 chmod +x kube-proxy kubelet
 sudo mv kube-proxy kubelet /usr/local/bin/
 ```
 
 #### Configure the ```kubelet``` Systemd Unit
-```shell
+```
 cat > kubelet.service <<EOF
 [Unit]
 Description=Kubernetes Kubelet
@@ -642,7 +642,7 @@ EOF
 ```
 
 #### Create the ```kubelet``` ```kubeconfig``` File
-```shell
+```
 cat > kubeconfig <<EOF
 apiVersion: v1
 clusters:
@@ -665,7 +665,7 @@ EOF
 ```
 
 #### Configure the ```kube-proxy``` Systemd Unit
-```shell
+```
 cat > kube-proxy.service <<EOF
 [Unit]
 Description=Kubernetes Kube Proxy
@@ -683,7 +683,7 @@ EOF
 ```
 
 #### Place the Systemd Units and Start All Services
-```shell
+```
 sudo mv kubeconfig /var/lib/kubelet/kubeconfig
 sudo mv kubelet.service kube-proxy.service /etc/systemd/system/
 sudo systemctl daemon-reload
@@ -693,13 +693,13 @@ sudo systemctl restart kubelet kube-proxy
 
 ## Verify via ```kubectl``` on the ```master```
 
-```shell
+```
 ssh -i ${KEY_NAME}.pem ubuntu@$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
 ```
 
 #### Ensure the Nodes have Joined
 
-```shell
+```
 kubectl get nodes
 NAME           STATUS    ROLES     AGE       VERSION
 ip-10-1-0-10   Ready     <none>    4m        v1.9.2
@@ -711,7 +711,7 @@ ip-10-1-0-12   Ready     <none>    46s       v1.9.2
 
 ##### Create the ```kube-dns.yml``` Definition
 
-```shell
+```
 cat > kube-dns.yml <<EOF
 # Copyright 2016 The Kubernetes Authors.
 #
@@ -915,7 +915,7 @@ EOF
 
 ##### Deploy ```kube-dns```
 
-```shell
+```
 kubectl create -f kube-dns.yml
 ```
 
@@ -924,12 +924,12 @@ kubectl create -f kube-dns.yml
 
 ## Deploying a Sample Application
 #### Obtain the ```master``` External IP
-```shell
+```
 API_IP=$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
 ```
 
 #### Create a Local ```kubeconfig``` File
-```shell
+```
 cat > kubeconfig <<EOF
 apiVersion: v1
 clusters:
@@ -947,7 +947,7 @@ EOF
 ```
 
 #### Create an ```nginx``` Test Pod
-```shell
+```
 export KUBECONFIG=./kubeconfig
 kubectl get pods --all-namespaces
 kubectl run nginx --image=nginx
@@ -955,31 +955,31 @@ kubectl get pods -l run=nginx
 ```
 
 #### Obtain the Pod Name
-```shell
+```
 POD_NAME=$(kubectl get pods -l run=nginx -o jsonpath="{.items[0].metadata.name}")
 ```
 
 #### Verify Port Forwarding
-```shell
+```
 kubectl port-forward $POD_NAME 8080:80
 curl localhost:8080
 ```
 
 #### Verify Pod Logging
-```shell
+```
 kubectl logs $POD_NAME -f
 127.0.0.1 - - [03/Feb/2018:05:45:46 +0000] "GET / HTTP/1.1" 200 612 "-" "curl/7.54.0" "-"
 ```
 
 #### Verify Pod Exec
-```shell
+```
 kubectl exec -ti $POD_NAME -- nginx -v
 nginx version: nginx/1.13.8
 ```
 
 #### Verify Exposed Service
 
-```shell
+```
 NODE_IP=$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=worker-1' --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' --output text)
 kubectl expose deployment nginx --port 80 --type NodePort
 NODE_PORT=$(kubectl get svc nginx --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
@@ -990,7 +990,7 @@ curl ${NODE_IP}:${NODE_PORT}
 ## Instance Deletion
 ### ```worker-1``` and ```worker-2``` Deletion
 #### Obtain the Worker Instance IDs
-```shell
+```
 export AWS_DEFAULT_REGION="us-east-1"
 
 INSTANCE1_ID="$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=worker-1' --query 'Reservations[].Instances[].InstanceId' --output text)"
@@ -998,7 +998,7 @@ INSTANCE2_ID="$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filt
 ```
 
 #### Terminate ```worker-1``` and ```worker-2```
-```shell
+```
 aws ec2 terminate-instances --region ${AWS_DEFAULT_REGION} --instance-ids ${INSTANCE1_ID}
 aws ec2 terminate-instances --region ${AWS_DEFAULT_REGION} --instance-ids ${INSTANCE2_ID}
 ```
@@ -1006,7 +1006,7 @@ aws ec2 terminate-instances --region ${AWS_DEFAULT_REGION} --instance-ids ${INST
 ### ```master``` Deletion
 
 #### Obtain the ```master``` Instance ID and Terminate
-```shell
+```
 INSTANCEM_ID="$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=master' --query 'Reservations[].Instances[].InstanceId' --output text)"
 aws ec2 terminate-instances --region ${AWS_DEFAULT_REGION} --instance-ids ${INSTANCEM_ID}
 ```
@@ -1015,18 +1015,18 @@ aws ec2 terminate-instances --region ${AWS_DEFAULT_REGION} --instance-ids ${INST
 
 #### Obtain the ```etcd``` Instance ID and Terminate
 
-```shell
+```
 INSTANCEE_ID="$(aws ec2 describe-instances --region ${AWS_DEFAULT_REGION} --filter 'Name=tag:Name,Values=etcd' --query 'Reservations[].Instances[].InstanceId' --output text)"
 aws ec2 terminate-instances --region ${AWS_DEFAULT_REGION} --instance-ids ${INSTANCEE_ID}
 ```
 ### SSH Keypair Deletion
-```shell
+```
 aws ec2 delete-key-pair --region ${AWS_DEFAULT_REGION} --key-name "${KEY_NAME}"
 ```
 
 ## Cloudformation/VPC Deletion
 
 #### Delete the Stack
-```shell
+```
 aws cloudformation delete-stack --region ${AWS_DEFAULT_REGION} --stack-name ${STACK_NAME}
 ```

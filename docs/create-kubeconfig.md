@@ -3,7 +3,7 @@
 
 From the same installation system shell, obtain the master system IP
 ```
-MASTER_IP=$(aws ec2 describe-instances \
+$ MASTER_IP=$(aws ec2 describe-instances \
   --region ${AWS_DEFAULT_REGION} \
   --filter 'Name=tag:Name,Values=master' \
   --query 'Reservations[].Instances[].NetworkInterfaces[0].Association.PublicIp' \
@@ -12,7 +12,7 @@ MASTER_IP=$(aws ec2 describe-instances \
 
 Create the ```kubeconfig``` file locally
 ```
-cat > kubeconfig <<EOF
+$ cat > kubeconfig <<EOF
 apiVersion: v1
 clusters:
 - cluster:
@@ -35,12 +35,12 @@ EOF
 
 export the location of the ```KUBECONFIG```
 ```
-export KUBECONFIG=./kubeconfig
+$ export KUBECONFIG=./kubeconfig
 ```
 
 Verify remote API access
 ```
-kubectl get nodes
+$ kubectl get nodes
 NAME           STATUS    ROLES     AGE      VERSION
 ip-10-1-0-10   Ready     <none>    9m       v1.9.2
 ip-10-1-0-11   Ready     <none>    6m       v1.9.2
