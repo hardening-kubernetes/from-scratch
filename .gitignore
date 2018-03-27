@@ -1,3 +1,7 @@
 .DS_Store
 *.pem
 kubeconfig
+*.dump
+*.raw
+etcdctl
+boltbrowser*
