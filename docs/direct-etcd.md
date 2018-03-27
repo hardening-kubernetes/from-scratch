@@ -1,6 +1,7 @@
-# Probing Etcd Directly
+# Access the Etcd Services Directly
 
 ## Services Available
+
 - `22/tcp` - [SSH](https://openssh.org)
 - `2379/tcp` - [Etcd server service](https://github.com/coreos/etcd#etcd-tcp-ports)
 - `2380/tcp` - [Etcd peer discovery service](https://github.com/coreos/etcd#etcd-tcp-ports)
