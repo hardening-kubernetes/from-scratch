@@ -84,7 +84,6 @@ At this most basic level, "Level 0", the current configuration offers very littl
 Ouch! The security configuration of "Level 0" is not resistant to remote attacks.  Let's do the very basic steps to prevent the "Level 0" attacks from being so straightforward.
 
 1. Improve the security group configuration
-2. Enable TLS on Etcd communications
 3. Enable TLS on the externally exposed Kubernetes API
 
 #### Deploy Application Workloads
@@ -114,6 +113,7 @@ In order to provide the proper boundaries around workloads and their resources, 
 1. Malicious Image, Compromised Container, Multi-tenant Misuse
   - Service Account Tokens
   - Dashboard Access
+  - Direct Etcd Access
   - Tiller Access
   - Kubelet Exploit
   - Application Tampering
@@ -123,6 +123,7 @@ In order to provide the proper boundaries around workloads and their resources, 
 
 #### Level 3 Hardening
 1. RBAC
+2. Etcd TLS
 2. New Dashboard
 3. Separate Kubeconfigs per user
 4. Tiller TLS
