@@ -33,7 +33,7 @@ Connection to 54.89.108.72 port 22 [tcp/ssh] succeeded!
 SSH-2.0-OpenSSH_7.2p2 Ubuntu-4ubuntu2.4
 ```
 
-### Probe the `cAdvisor` port:
+### Probe the `cAdvisor` service:
 
 Verify the port is responding:
 ```
@@ -50,10 +50,8 @@ Navigate to it using a browser:
 $ open http://$CONTROLLERIP:4194/containers/
 ```
 Hit `tcp/4194` on the Prometheus formatted `/metrics` endpoint:
-```
-$ curl $CONTROLLERIP:4194/metrics
-```
-View the [Full Metrics Output](cmd/cadvisor-metrics.md)
+
+ [```$ curl $CONTROLLERIP:4194/metrics```](cmd/cadvisor-metrics.md)
 
 As you can see, there are many pieces of information that describe the infrastructure that should not be exposed to an attacker.
 
@@ -96,8 +94,7 @@ From the `/metrics` endpoint:
 
 Using just this information from cAdvisor, it's possible to gather a tremendous amount of information about the node's Host OS, the Network interface names, the CPU/RAM/Net/Disk utilization (over time), the processes running, and how long they've been running.  What a helpful service!
 
-
-### Probe the "Secure" `Kubernetes API` port:
+### Probe the "Secure" `Kubernetes API` service:
 
 Verify the port is responding:
 ```
@@ -107,7 +104,7 @@ Connection to 54.89.108.72 port 6443 [tcp/sun-sr-https] succeeded!
 
 TODO
 
-### Probe the "Insecure" `Kubernetes API` port:
+### Probe the "Insecure" `Kubernetes API` service:
 
 Verify the port is responding:
 ```
@@ -117,7 +114,7 @@ Connection to 54.89.108.72 port 8080 [tcp/http-alt] succeeded!
 
 In this case, the "secure" port and "insecure" port are identical in functionality.
 
-### Probe the `Kubelet Healthz` port:
+### Probe the `Kubelet Healthz` service:
 
 Verify the port is responding:
 ```
@@ -134,7 +131,7 @@ ubuntu@ip-10-1-0-10:~$ curl localhost:10248/healthz
 ok
 ```
 
-### Probe the `Kube-Proxy Metrics` port:
+### Probe the `Kube-Proxy Metrics` service:
 
 Verify the port is responding:
 ```
@@ -148,16 +145,13 @@ $ ssh -i hkfs.pem ubuntu@$CONTROLLERIP
 ubuntu@ip-10-1-0-10:~$ curl localhost:10249/healthz
 ok
 ubuntu@ip-10-1-0-10:~$ curl localhost:10249/metrics
-...snip...
-rest_client_requests_total{code="200",host="10.1.0.10:8080",method="GET"} 3958
-rest_client_requests_total{code="201",host="10.1.0.10:8080",method="POST"} 1
-rest_client_requests_total{code="<error>",host="10.1.0.10:8080",method="GET"} 23
-rest_client_requests_total{code="<error>",host="10.1.0.10:8080",method="POST"} 2
 ```
+
+```ubuntu@ip-10-1-0-10:~$``` [```curl localhost:10249/metrics ```](cmd/kube-proxy-metrics.md)
 
 It can tell us how `kube-proxy` reaches the API server on `10.1.0.10:8080` without encryption necessary.
 
-### Probe the `Kubelet Read/Write` port:
+### Probe the `Kubelet Read/Write` service:
 
 Verify the port is responding:
 ```
@@ -176,14 +170,14 @@ $ curl -sk https://$CONTROLLERIP:10250
 
 So, the Kubelet is always listening on a TLS port, but by default, it's not authenticating or authorizing access to it.  The `-s` is to be "silent" and the `-k` tells curl to allow connections without certificates.
 
-According to the source code, the following endpoints are available on the Kubelet "read-only" and "read/write" API:
+According to the source code, the following endpoints are available on both the Kubelet "read-only" API and "read/write" API:
 
 - `/metrics`
 - `/metrics/cadvisor`
 - `/spec/`
 - `/stats/`
 
-The following endpoints are only available on the Kubelet's "read/write" API when the "debugging handlers" are enabled (which is the default):
+The following endpoints are only available on the Kubelet's "read/write" API:
 - `/logs/` - Get logs from a pod/container.
 - `/run/` - Alias for `/exec/`
 - `/exec/` - Exec a command in a running container
@@ -195,7 +189,7 @@ The following endpoints are only available on the Kubelet's "read/write" API whe
 
 
 
-### Probe the `Kubernetes Scheduler HTTP` port:
+### Probe the `Kubernetes Scheduler HTTP` service:
 
 Verify the port is responding:
 ```
@@ -210,7 +204,7 @@ $ curl $CONTROLLERIP:10251/healthz
 ok
 ```
 
-### Probe the `Kubernetes Controller Manager` port:
+### Probe the `Kubernetes Controller Manager` service:
 
 Verify the port is responding:
 ```
@@ -225,7 +219,7 @@ $ curl $CONTROLLERIP:10252/healthz
 ok
 ```
 
-### Probe the `Kubelet Read-Only` port:
+### Probe the `Kubelet Read-Only` service:
 
 Verify the port is responding:
 ```
@@ -251,123 +245,22 @@ $ curl $CONTROLLERIP:10255/healthz
 ok
 ```
 The `/metrics` from the Kubelet indicate how busy the node is in terms of the `docker` runtime and how many containers "churn" on this node.
-```
-$ curl $CONTROLLERIP:10255/metrics
-...snip...
-kubelet_docker_operations{operation_type="list_containers"} 3.27638e+06
-kubelet_docker_operations{operation_type="list_images"} 124267
-kubelet_docker_operations{operation_type="pull_image"} 92
-kubelet_docker_operations{operation_type="remove_container"} 111
-kubelet_docker_operations{operation_type="start_container"} 115
-kubelet_docker_operations{operation_type="stop_container"} 155
-...snip...
-```
+
+[```$ curl $CONTROLLERIP:10255/metrics ```](cmd/kubelet-metrics.md)
+
 The `/metrics/cadvisor` endpoint passes through the metrics from the cAdvisor port.
-```
-$ curl $CONTROLLERIP:10255/metrics/cadvisor
-...snip...
-...snip...
-```
+
+[```$ curl $CONTROLLERIP:10255/metrics/cadvisor```](cmd/kubelet-metrics-cadvisor.md)
+
  The `/spec/` endpoint writes the cAdvisor `MachineInfo()` output, and this gives a couple hints that it runs on AWS, the instance type, and the instance ID:
-```
-$ curl $CONTROLLERIP:10255/spec/
-{
-  "num_cores": 1,
-  "cpu_frequency_khz": 2400088,
-  "memory_capacity": 2095865856,
-  "hugepages": [
-   {
-    "page_size": 2048,
-    "num_pages": 0
-   }
-  ],
-  "machine_id": "9388fcdf27304278a02f83a9c2d5333d",
-  "system_uuid": "EC2826BA-6C3E-72DF-F19A-D389212A0C7D",
-  "boot_id": "57596319-1c3e-4bb9-9514-97e9a9ccede6",
-  "filesystems": [
-   {
-    "device": "/dev/xvda1",
-    "capacity": 33240739840,
-    "type": "vfs",
-    "inodes": 4096000,
-    "has_inodes": true
-   },
-   {
-    "device": "tmpfs",
-    "capacity": 209588224,
-    "type": "vfs",
-    "inodes": 255843,
-    "has_inodes": true
-   }
-  ],
-  "disk_map": {
-   "202:0": {
-    "name": "xvda",
-    "major": 202,
-    "minor": 0,
-    "size": 34359738368,
-    "scheduler": "none"
-   }
-  },
-  "network_devices": [
-   {
-    "name": "eth0",
-    "mac_address": "06:d7:63:8b:d9:78",
-    "speed": 0,
-    "mtu": 9001
-   }
-  ],
-  "topology": [
-   {
-    "node_id": 0,
-    "memory": 2095865856,
-    "cores": [
-     {
-      "core_id": 0,
-      "thread_ids": [
-       0
-      ],
-      "caches": [
-       {
-        "size": 32768,
-        "type": "Data",
-        "level": 1
-       },
-       {
-        "size": 32768,
-        "type": "Instruction",
-        "level": 1
-       },
-       {
-        "size": 262144,
-        "type": "Unified",
-        "level": 2
-       }
-      ]
-     }
-    ],
-    "caches": [
-     {
-      "size": 31457280,
-      "type": "Unified",
-      "level": 3
-     }
-    ]
-   }
-  ],
-  "cloud_provider": "AWS",
-  "instance_type": "t2.small",
-  "instance_id": "i-05bb925bb00bf3bcc"
- }
-```
+
+[```$ curl $CONTROLLERIP:10255/spec/ ```](cmd/kubelet-spec.md)
 
 The `/pods` endpoint provides the near-equivalent of `kubectl get pods -o json` for the pods running on this node:
 
-[`curl -s $CONTROLLERIP:10255/pods`](cmd/kubelet-pods.md)
+[`$ curl -s $CONTROLLERIP:10255/pods`](cmd/kubelet-pods.md)
 
-
-
-### Probe the `Kube-Proxy Healthcheck` port:
+### Probe the `Kube-Proxy Healthcheck` service:
 
 Verify the port is responding:
 ```
