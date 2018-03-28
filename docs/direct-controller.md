@@ -14,9 +14,11 @@
 - `10255/tcp` - [Kubelet Read-only API](https://kubernetes.io/docs/reference/generated/kubelet)
 - `10256/tcp` - [Kube-Proxy health check server](https://kubernetes.io/docs/reference/generated/kube-proxy/)
 
-Set the `controller` IP to a variable:
+Set the SSH Key, Region, and `controller` IP to variables:
 
 ```
+$ export KEY_NAME="hkfs"
+$ export AWS_DEFAULT_REGION="us-east-1"
 $ export CONTROLLERIP=$(aws ec2 describe-instances \
   --region ${AWS_DEFAULT_REGION} \
   --filter 'Name=tag:Name,Values=controller' \
@@ -124,7 +126,7 @@ nc: connectx to 54.89.108.72 port 10248 (tcp) failed: Connection refused
 
 It's only running on the `localhost` address:
 ```
-$ ssh -i hkfs.pem ubuntu@$CONTROLLERIP
+$ ssh -i ${KEY_NAME}.pem ubuntu@$CONTROLLERIP
 ubuntu@ip-10-1-0-10:~$ curl localhost:10248/
 404 page not found
 ubuntu@ip-10-1-0-10:~$ curl localhost:10248/healthz
@@ -141,7 +143,7 @@ nc: connectx to 54.89.108.72 port 10249 (tcp) failed: Connection refused
 
 It's only running on the `localhost` address:
 ```
-$ ssh -i hkfs.pem ubuntu@$CONTROLLERIP
+$ ssh -i ${KEY_NAME}.pem ubuntu@$CONTROLLERIP
 ubuntu@ip-10-1-0-10:~$ curl localhost:10249/healthz
 ok
 ubuntu@ip-10-1-0-10:~$ curl localhost:10249/metrics
