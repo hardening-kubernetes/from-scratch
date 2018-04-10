@@ -123,6 +123,7 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --authorization-mode=AlwaysAllow \\
   --etcd-servers=http://10.1.0.5:2379 \\
   --insecure-bind-address=0.0.0.0 \\
+  --secure-port=0 \\
   --runtime-config=api/all \\
   --service-cluster-ip-range=10.3.0.0/16 \\
   --service-node-port-range=30000-32767 \\

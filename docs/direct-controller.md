@@ -4,7 +4,6 @@
 
 - `22/tcp` - [SSH](https://openssh.org)
 - `4194/tcp` - [Kubelet cAdvisor endpoint](https://github.com/google/cadvisor)
-- `6443/tcp` - [Kubernetes API Server "Secure" Port](https://kubernetes.io/docs/reference/generated/kube-apiserver/)
 - `8080/tcp` - [Kubernetes API Server "Insecure" Port](https://kubernetes.io/docs/reference/generated/kube-apiserver/)
 - `10248/tcp` - [Kubelet Healthz Endpoint](https://kubernetes.io/docs/reference/generated/kubelet/)
 - `10249/tcp` - [Kube-Proxy Metrics](https://kubernetes.io/docs/reference/generated/kube-proxy/)
@@ -96,16 +95,6 @@ From the `/metrics` endpoint:
 
 Using just this information from cAdvisor, it's possible to gather a tremendous amount of information about the node's Host OS, the Network interface names, the CPU/RAM/Net/Disk utilization (over time), the processes running, and how long they've been running.  What a helpful service!
 
-### Probe the "Secure" `Kubernetes API` service:
-
-Verify the port is responding:
-```
-$ nc -vz $CONTROLLERIP 6443
-Connection to 54.89.108.72 port 6443 [tcp/sun-sr-https] succeeded!
-```
-
-TODO
-
 ### Probe the "Insecure" `Kubernetes API` service:
 
 Verify the port is responding:
@@ -114,7 +103,7 @@ $ nc -vz $CONTROLLERIP 8080
 Connection to 54.89.108.72 port 8080 [tcp/http-alt] succeeded!
 ```
 
-In this case, the "secure" port and "insecure" port are identical in functionality.
+TODO
 
 ### Probe the `Kubelet Healthz` service:
 
