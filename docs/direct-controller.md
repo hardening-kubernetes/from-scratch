@@ -288,6 +288,8 @@ $ curl $CONTROLLERIP:8080/api/v1/namespaces/default/pods?limit=500
 ...snip...
 ```
 
+While not terribly practical, it is possible to interact with the API using `curl` as shown above.  However, having the `kubectl` binary makes things much more user-friendly.
+
 ### Probe the `Kubelet Healthz` service:
 
 Verify the port is responding:
