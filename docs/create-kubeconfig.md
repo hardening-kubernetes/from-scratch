@@ -47,4 +47,4 @@ ip-10-1-0-11   Ready     <none>    6m       v1.9.2
 ip-10-1-0-12   Ready     <none>    1m       v1.9.2
 ```
 
-[Back](/README.md) | [Next](deploy-kube-dns.md)
+[Back](/README.md#build-the-cluster) | [Next](deploy-kube-dns.md)

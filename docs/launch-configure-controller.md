@@ -306,4 +306,4 @@ etcd-0               Healthy   {"health": "true"}
 
 Exit the ```controller``` instance SSH session to return to the installation system shell.
 
-[Back](/README.md) | [Next](launch-configure-workers.md)
+[Back](/README.md#build-the-cluster) | [Next](launch-configure-workers.md)

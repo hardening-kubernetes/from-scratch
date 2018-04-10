@@ -219,4 +219,4 @@ NAMESPACE     NAME                        READY     STATUS    RESTARTS   AGE
 kube-system   kube-dns-68886d5985-sht75   3/3       Running   0          1m
 ```
 
-[Back](/README.md) | [Next](deploy-heapster.md)
+[Back](/README.md#level-0-security) | [Next](deploy-heapster.md)

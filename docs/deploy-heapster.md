@@ -57,4 +57,4 @@ kube-system   heapster-d7c4b86d4-mdsps    1/1       Running   0          1m
 kube-system   kube-dns-68886d5985-sht75   3/3       Running   0          2m
 ```
 
-[Back](/README.md) | [Next](deploy-basic-dashboard.md)
+[Back](/README.md#level-0-security) | [Next](deploy-basic-dashboard.md)
