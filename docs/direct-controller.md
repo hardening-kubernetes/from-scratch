@@ -103,7 +103,190 @@ $ nc -vz $CONTROLLERIP 8080
 Connection to 54.89.108.72 port 8080 [tcp/http-alt] succeeded!
 ```
 
-TODO
+Curl the API Server directly:
+```
+$ $ curl $CONTROLLERIP:8080
+{
+  "paths": [
+    "/api",
+    "/api/v1",
+    "/apis",
+    "/apis/",
+    "/apis/admissionregistration.k8s.io",
+    "/apis/admissionregistration.k8s.io/v1beta1",
+    "/apis/apiextensions.k8s.io",
+    "/apis/apiextensions.k8s.io/v1beta1",
+    "/apis/apiregistration.k8s.io",
+    "/apis/apiregistration.k8s.io/v1beta1",
+    "/apis/apps",
+    "/apis/apps/v1",
+    "/apis/apps/v1beta1",
+    "/apis/apps/v1beta2",
+    "/apis/authentication.k8s.io",
+    "/apis/authentication.k8s.io/v1",
+    "/apis/authentication.k8s.io/v1beta1",
+    "/apis/authorization.k8s.io",
+    "/apis/authorization.k8s.io/v1",
+    "/apis/authorization.k8s.io/v1beta1",
+    "/apis/autoscaling",
+    "/apis/autoscaling/v1",
+    "/apis/autoscaling/v2beta1",
+    "/apis/batch",
+    "/apis/batch/v1",
+    "/apis/batch/v1beta1",
+    "/apis/certificates.k8s.io",
+    "/apis/certificates.k8s.io/v1beta1",
+    "/apis/events.k8s.io",
+    "/apis/events.k8s.io/v1beta1",
+    "/apis/extensions",
+    "/apis/extensions/v1beta1",
+    "/apis/networking.k8s.io",
+    "/apis/networking.k8s.io/v1",
+    "/apis/policy",
+    "/apis/policy/v1beta1",
+    "/apis/rbac.authorization.k8s.io",
+    "/apis/rbac.authorization.k8s.io/v1",
+    "/apis/rbac.authorization.k8s.io/v1beta1",
+    "/apis/storage.k8s.io",
+    "/apis/storage.k8s.io/v1",
+    "/apis/storage.k8s.io/v1beta1",
+    "/healthz",
+    "/healthz/autoregister-completion",
+    "/healthz/etcd",
+    "/healthz/ping",
+    "/healthz/poststarthook/apiservice-openapi-controller",
+    "/healthz/poststarthook/apiservice-registration-controller",
+    "/healthz/poststarthook/apiservice-status-available-controller",
+    "/healthz/poststarthook/bootstrap-controller",
+    "/healthz/poststarthook/ca-registration",
+    "/healthz/poststarthook/generic-apiserver-start-informers",
+    "/healthz/poststarthook/kube-apiserver-autoregistration",
+    "/healthz/poststarthook/start-apiextensions-controllers",
+    "/healthz/poststarthook/start-apiextensions-informers",
+    "/healthz/poststarthook/start-kube-aggregator-informers",
+    "/healthz/poststarthook/start-kube-apiserver-informers",
+    "/logs",
+    "/metrics",
+    "/swagger-2.0.0.json",
+    "/swagger-2.0.0.pb-v1",
+    "/swagger-2.0.0.pb-v1.gz",
+    "/swagger.json",
+    "/swaggerapi",
+    "/ui",
+    "/ui/",
+    "/version"
+  ]
+}
+```
+
+Obtain the version of the Kubernetes API Server:
+```
+$ curl $CONTROLLERIP:8080/version
+{
+  "major": "1",
+  "minor": "9",
+  "gitVersion": "v1.9.2",
+  "gitCommit": "5fa2db2bd46ac79e5e00a4e6ed24191080aa463b",
+  "gitTreeState": "clean",
+  "buildDate": "2018-01-18T09:42:01Z",
+  "goVersion": "go1.9.2",
+  "compiler": "gc",
+  "platform": "linux/amd64"
+}
+```
+
+List the services available via the API's built-in `/ui` proxy:
+```
+$ curl $CONTROLLERIP:8080/ui/
+<a href="/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/">Temporary Redirect</a>.
+```
+
+Obtain logs from containers, pods, and system logging endpoints on the underlying host:
+```
+$ curl $CONTROLLERIP:8080/logs/
+<pre>
+<a href="apt/">apt/</a>
+<a href="auth.log">auth.log</a>
+<a href="auth.log.1">auth.log.1</a>
+<a href="auth.log.2.gz">auth.log.2.gz</a>
+<a href="auth.log.3.gz">auth.log.3.gz</a>
+<a href="btmp">btmp</a>
+<a href="btmp.1">btmp.1</a>
+<a href="cloud-init-output.log">cloud-init-output.log</a>
+<a href="cloud-init.log">cloud-init.log</a>
+<a href="containers/">containers/</a>
+<a href="dist-upgrade/">dist-upgrade/</a>
+<a href="dpkg.log">dpkg.log</a>
+<a href="dpkg.log.1">dpkg.log.1</a>
+<a href="fsck/">fsck/</a>
+<a href="kern.log">kern.log</a>
+<a href="kern.log.1">kern.log.1</a>
+<a href="lastlog">lastlog</a>
+<a href="lxd/">lxd/</a>
+<a href="pods/">pods/</a>
+<a href="syslog">syslog</a>
+<a href="syslog.1">syslog.1</a>
+<a href="syslog.2.gz">syslog.2.gz</a>
+<a href="syslog.3.gz">syslog.3.gz</a>
+<a href="syslog.4.gz">syslog.4.gz</a>
+<a href="syslog.5.gz">syslog.5.gz</a>
+<a href="syslog.6.gz">syslog.6.gz</a>
+<a href="syslog.7.gz">syslog.7.gz</a>
+<a href="unattended-upgrades/">unattended-upgrades/</a>
+<a href="wtmp">wtmp</a>
+<a href="wtmp.1">wtmp.1</a>
+</pre> 
+```
+
+View, for example, the host `auth.log`:
+```
+$ curl $CONTROLLERIP:8080/logs/auth.log
+...snip...
+Apr 10 02:17:01 ip-10-1-0-10 CRON[1571]: pam_unix(cron:session): session opened for user root by (uid=0)
+Apr 10 02:17:01 ip-10-1-0-10 CRON[1571]: pam_unix(cron:session): session closed for user root
+Apr 10 02:20:53 ip-10-1-0-10 sudo: pam_unix(sudo:session): session closed for user root
+Apr 10 02:20:54 ip-10-1-0-10 sshd[32757]: Received disconnect from x.x.x.x port 55139:11: disconnected by user
+Apr 10 02:20:54 ip-10-1-0-10 sshd[32757]: Disconnected from x.x.x.x port 55139
+Apr 10 02:20:54 ip-10-1-0-10 sshd[32718]: pam_unix(sshd:session): session closed for user ubuntu
+Apr 10 02:20:54 ip-10-1-0-10 systemd-logind[1231]: Removed session 630.
+Apr 10 02:20:54 ip-10-1-0-10 systemd: pam_unix(systemd-user:session): session closed for user ubuntu
+```
+
+View the `kubernetes-dashboard` pod logs:
+```
+$ curl $CONTROLLERIP:8080/logs/pods/d60f089f-0a85-11e8-9462-06d7638bd978/kubernetes-dashboard_2.log
+...snip...
+{"log":"Using apiserver-host location: http://10.1.0.10:8080\n","stream":"stdout","time":"2018-02-05T15:08:17.444915083Z"}
+{"log":"Skipping in-cluster config\n","stream":"stdout","time":"2018-02-05T15:08:17.444920926Z"}
+{"log":"Using random key for csrf signing\n","stream":"stdout","time":"2018-02-05T15:08:17.444923968Z"}
+{"log":"No request provided. Skipping authorization header\n","stream":"stdout","time":"2018-02-05T15:08:17.44492672Z"}
+{"log":"Successful initial request to the apiserver, version: v1.9.2\n","stream":"stdout","time":"2018-02-05T15:08:17.44887775Z"}
+```
+
+Mimic the `kubectl get pods` command:
+```
+$ curl $CONTROLLERIP:8080/api/v1/namespaces/default/pods?limit=500
+{
+  "kind": "PodList",
+  "apiVersion": "v1",
+  "metadata": {
+    "selfLink": "/api/v1/namespaces/default/pods",
+    "resourceVersion": "1633976"
+  },
+  "items": [
+    {
+      "metadata": {
+        "name": "subpath",
+        "namespace": "default",
+        "selfLink": "/api/v1/namespaces/default/pods/subpath",
+        "uid": "3fb02fa6-2e9e-11e8-9d04-06d7638bd978",
+        "resourceVersion": "418041",
+        "creationTimestamp": "2018-03-23T13:29:44Z"
+      },
+      "spec": {
+        "volumes": [
+...snip...
+```
 
 ### Probe the `Kubelet Healthz` service:
 
