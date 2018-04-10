@@ -83,8 +83,8 @@ At this most basic level, "Level 0", the current configuration offers very littl
 
 Ouch! The security configuration of "Level 0" is not resistant to remote attacks.  Let's do the very basic steps to prevent the "Level 0" attacks from being so straightforward.
 
-1. Improve the security group configuration
-3. Enable TLS on the externally exposed Kubernetes API
+1. [Improve the security group](docs/l1-security-groups.md) configuration
+3. [Enable TLS](docs/l1-api-tls.md) on the externally exposed Kubernetes API
 
 #### Deploy Application Workloads
 
