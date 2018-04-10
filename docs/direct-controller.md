@@ -368,6 +368,8 @@ Directly leveraging the unprotected `kubelet` API to:
 - [View Pod Logs](kubelet-pod-logs.md)
 - [Execute commands](kubelet-exploit.md) inside the containers
 
+As you can see, the `kubelet` is essentially a remote API running as `root` on your system that needs additional hardening to prevent serious avenues for escalation.
+
 ### Probe the `Kubernetes Scheduler HTTP` service:
 
 Verify the port is responding:
