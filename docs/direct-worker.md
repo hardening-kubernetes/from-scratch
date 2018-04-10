@@ -44,7 +44,7 @@ $ curl $WORKER1IP:4194
 <a href="/containers/">Temporary Redirect</a>.
 ```
 
-Just like the `controller`, the `worker` provides metrics from `cAdvisor`.
+Just like the [controller](direct-controller.md), the `worker` provides similar metrics from `cAdvisor` for this host.
 
 ### Probe the `Kubelet Healthz` service:
 
@@ -78,6 +78,8 @@ ubuntu@ip-10-1-0-11:~$ curl localhost:10249/healthz
 ok
 ubuntu@ip-10-1-0-11:~$ curl localhost:10249/metrics
 ```
+
+Similar to the [controller](direct-controller.md), metrics on this host's `kube-proxy` are available at this endpoint.
 
 ### Probe the `Kubelet Read/Write` service:
 
