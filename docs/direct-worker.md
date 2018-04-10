@@ -114,7 +114,7 @@ The following endpoints are only available on the Kubelet's "read/write" API:
 - `/runningpods/` - Lists all running pods in short JSON form
 - `/debug/pprof/` - Various go debugging performance endpoints
 
-Refer to the [controller](direct-controller.md) services details for example outputs as these provide similar output for that given node running the `kubelet`.
+Refer to the [controller](direct-controller.md#probe-the-kubelet-readwrite-service) services details for example outputs as these provide similar output for that given node running the `kubelet`.
 
 ### Probe the `Kubelet Read-Only` service:
 
