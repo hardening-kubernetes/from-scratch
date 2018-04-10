@@ -363,7 +363,7 @@ The following endpoints are only available on the Kubelet's "read/write" API:
 - `/runningpods/` - Lists all running pods in short JSON form
 - `/debug/pprof/` - Various go debugging performance endpoints
 
-
+Directly [Leveraging the Kubelet API](kubelet-exploit.md) to view logs, list pods, and exec into pods.
 
 ### Probe the `Kubernetes Scheduler HTTP` service:
 
