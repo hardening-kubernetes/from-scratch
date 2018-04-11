@@ -13,8 +13,9 @@
 - `10255/tcp` - [Kubelet Read-only API](https://kubernetes.io/docs/reference/generated/kubelet)
 - `10256/tcp` - [Kube-Proxy health check server](https://kubernetes.io/docs/reference/generated/kube-proxy/)
 
-Set the SSH Key, Region, and `controller` IP to variables:
+Much like the initial configuration of the `etcd` server, the configuration of this `controller` node is also uncommonly insecure for the purposes of education.
 
+Set the SSH Key, Region, and `controller` IP to variables:
 ```
 $ export KEY_NAME="hkfs"
 $ export AWS_DEFAULT_REGION="us-east-1"
@@ -178,6 +179,7 @@ $ $ curl $CONTROLLERIP:8080
   ]
 }
 ```
+Because the unencrypted request was successful and the list of available endpoints came back, it means we have full access to the API server and can get/update/delete any information stored inside the cluster.
 
 Obtain the version of the Kubernetes API Server:
 ```
@@ -200,6 +202,7 @@ List the services available via the API's built-in `/ui` proxy:
 $ curl $CONTROLLERIP:8080/ui/
 <a href="/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/">Temporary Redirect</a>.
 ```
+Because we have sufficient access to the cluster API, visiting this URL will likely result in the ability to access the Kubernetes dashboard in this cluster.
 
 Obtain logs from containers, pods, and system logging endpoints on the underlying host:
 ```
@@ -344,6 +347,8 @@ $ curl -sk https://$CONTROLLERIP:10250
 404 page not found
 ```
 
+The lack of an authn/authz error means this port is unprotected, and it provides an extremely useful attack path to leverage the `kubelet` to have remote command execution inside nearly any pod/container, access to any pod log on that system, and access to any secret available to that node at a minimum.
+
 So, the Kubelet is always listening on a TLS port, but by default, it's not authenticating or authorizing access to it.  The `-s` is to be "silent" and the `-k` tells curl to allow connections without certificates.
 
 According to the source code, the following endpoints are available on both the Kubelet "read-only" API and "read/write" API:
@@ -368,7 +373,7 @@ Directly leveraging the unprotected `kubelet` API to:
 - [View Pod Logs](kubelet-pod-logs.md)
 - [Execute commands](kubelet-exploit.md) inside the containers
 
-As you can see, the `kubelet` is essentially a remote API running as `root` on your system that needs additional hardening to prevent serious avenues for escalation.
+As you can see, the `kubelet` is essentially a remote API running as `root` on your system that /always/ needs additional hardening to prevent seriously useful avenues for escalation.
 
 ### Probe the `Kubernetes Scheduler HTTP` service:
 
@@ -455,4 +460,7 @@ $ curl $CONTROLLERIP:10256
 $ curl $CONTROLLERIP:10256/healthz
 {"lastUpdated": "2018-03-27 21:17:09.14039841 +0000 UTC m=+888081.767665429","currentTime": "2018-03-27 21:17:36.679120214 +0000 UTC m=+888109.306387163"}
 ```
+
+Access to the Kubernetes API or the Kubelet read/write API from anywhere is almost a guaranteed full compromise of the cluster including all of its data, secrets, and source code.
+
 [Back](/README.md#level-0-attacks) | [Next](direct-worker.md)

@@ -4,7 +4,9 @@ The community continues to benefit from [Kubernetes the Hard Way](https://github
 
 By following this guide, you will configure one of the *least secure* clusters possible at the start. Each step will attempt to follow the pattern of a) educate, b) attack, c) harden, and d) verify in order of security importance and maturity.  Upon completion of the guide, you will have successfully hacked your cluster several times over and now fully understand all the necessary configuration changes to prevent each one from happening.
 
-> The cluster built in this tutorial is not production ready--especially at the beginning--but the concepts learned are definitely applicable to your production clusters.
+This guide will hopefully do a better job explaining all the angles that couldn't fit into a [single KubeCon talk](https://www.youtube.com/watch?v=vTgQLzeBfRU).
+
+> NOTE: The cluster built in this tutorial is not production ready--especially at the beginning--but the concepts learned are definitely applicable to your production clusters.
 
 ## Target Audience
 

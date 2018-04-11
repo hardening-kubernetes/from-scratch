@@ -10,6 +10,11 @@
 - `10255/tcp` - [Kubelet Read-only API](https://kubernetes.io/docs/reference/generated/kubelet)
 - `10256/tcp` - [Kube-Proxy health check server](https://kubernetes.io/docs/reference/generated/kube-proxy/)
 
+Unlike the `etcd` and `controller` configuration, this configuration of the `kubelet` isn't that far off most recent configurations.  Many self-made clusters do a decent job protecting `etcd` and the API server, but not all of them ensure the `kubelet` performs authn/authz to protect its API.
+
+For more information on the real risks of this attack vector, here is a recent writeup of an actual attack:
+- [https://medium.com/handy-tech/analysis-of-a-kubernetes-hack-backdooring-through-kubelet-823be5c3d67c](https://medium.com/handy-tech/analysis-of-a-kubernetes-hack-backdooring-through-kubelet-823be5c3d67c)
+
 Set the SSH Key, Region, and `worker-1` IP to variables:
 
 ```
