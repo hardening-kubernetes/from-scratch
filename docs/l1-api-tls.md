@@ -91,7 +91,7 @@ cfssl gencert \
   admin-csr.json | cfssljson -bare admin
 ```
 
-Creates:
+Which creates:
 ```
 admin-key.pem
 admin.pem
@@ -174,7 +174,7 @@ $ cfssl gencert \
   kubernetes-csr.json | cfssljson -bare kubernetes
 ```
 
-Creates:
+Which creates:
 ```
 kubernetes-key.pem
 kubernetes.pem
