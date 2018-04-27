@@ -101,6 +101,8 @@ At this point, there are some fundamental resource exhaustion problems that auth
 
 1. Launch too many pods
 2. Launch pods that consume too many CPU/RAM shares
+3. Launch pods that consume all available disk space and/or inodes.
+
 #### Level 2 Hardening
 
 In order to provide the proper boundaries around workloads and their resources, using separate namespaces and corresponding resource quotas can prevent the "Level 1" issues.  
