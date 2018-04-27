@@ -18,7 +18,7 @@ View the default nginx welcome message in your local browser:
 ```
 $ kubectl port-forward $(kubectl get pods -lrun=nginx -o jsonpath='{.items[0].metadata.name}') 8000:80
 ```
-And then visit [http://localhost:8000](http://localhost:8000) in your browser to see the voting application.
+And then visit [http://localhost:8000](http://localhost:8000) in your browser to see the default nginx application.
 
 For now, we'll just leave this here.  But very soon this will become a dangerous launching point that emphasizes the importance of a defense-in-depth security approach in Kubernetes clusters of any importance.
 
