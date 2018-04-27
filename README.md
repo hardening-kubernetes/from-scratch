@@ -92,9 +92,9 @@ Ouch! The security configuration of "Level 0" is not resistant to remote attacks
 
 With that modest amount of hardening, it's time to have this cluster perform some work.  To do that, we'll want to install [Helm](https://helm.sh) and its in-cluster helper, "Tiller".  With that in place, we'll deploy two sample applications via Helm Charts.
 
-1. Install Helm/Tiller
-2. Install the Vulnapp
-3. Install the Azure Vote App
+1. [Install Helm/Tiller](docs/deploy-helm.md)
+2. [Install the Vulnapp](docs/deploy-vulnapp.md)
+3. [Install the Azure Vote App](docs/deploy-voteapp.md)
 
 #### Level 1 Attacks
 
