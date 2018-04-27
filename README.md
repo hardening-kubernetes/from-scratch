@@ -92,7 +92,7 @@ Ouch! The security configuration of "Level 0" is not resistant to remote attacks
 
 With that modest amount of hardening, it's time to have this cluster perform some work.  Let's deploy two sample applications:
 
-1. [Install the Vulnapp](docs/deploy-vulnapp.md)
+1. [Install the "Vulnerable" application](docs/deploy-vulnapp.md)
 2. [Install the Azure Vote App](docs/deploy-voteapp.md)
 
 #### Level 1 Attacks
