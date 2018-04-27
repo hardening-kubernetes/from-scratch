@@ -86,15 +86,14 @@ At this most basic level, "Level 0", the current configuration offers very littl
 Ouch! The security configuration of "Level 0" is not resistant to remote attacks.  Let's do the very basic steps to prevent the "Level 0" attacks from being so straightforward.
 
 1. [Improve the security group](docs/l1-security-groups.md) configuration
-3. [Enable TLS](docs/l1-api-tls.md) on the externally exposed Kubernetes API
+2. [Enable TLS](docs/l1-api-tls.md) on the externally exposed Kubernetes API
 
 #### Deploy Application Workloads
 
-With that modest amount of hardening, it's time to have this cluster perform some work.  To do that, we'll want to install [Helm](https://helm.sh) and its in-cluster helper, "Tiller".  With that in place, we'll deploy two sample applications via Helm Charts.
+With that modest amount of hardening, it's time to have this cluster perform some work.  Let's deploy two sample applications:
 
-1. [Install Helm/Tiller](docs/deploy-helm.md)
-2. [Install the Vulnapp](docs/deploy-vulnapp.md)
-3. [Install the Azure Vote App](docs/deploy-voteapp.md)
+1. [Install the Vulnapp](docs/deploy-vulnapp.md)
+2. [Install the Azure Vote App](docs/deploy-voteapp.md)
 
 #### Level 1 Attacks
 
