@@ -401,7 +401,7 @@ $ WORKER2ENI_ID=$(aws ec2 describe-instances \
   --output text)
 ```
 
-Add the ```worker-1``` Pod CIDR Route to the Route Table
+Add the ```worker-2``` Pod CIDR Route to the Route Table
 ```
 $ aws ec2 create-route \
   --region ${AWS_DEFAULT_REGION} \
